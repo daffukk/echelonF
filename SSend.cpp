@@ -37,11 +37,23 @@ int serverSend(int argc, char* argv[]) {
   send(clientSocket, &filenameSize, sizeof(int), 0);
   send(clientSocket, filename, filenameSize, 0);
 
+  std::streampos fileSize = file.tellg();
+  file.seekg(0, std::ios::end);
+  fileSize = file.tellg() - fileSize;
+  file.seekg(0, std::ios::beg);
+
+  send(clientSocket, &fileSize, sizeof(int), 0);
+
   char buffer[BUFFER_SIZE];
   int bytes_read;
+  float MB = 0;
 
   while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
     send(clientSocket, buffer, bytes_read, 0);
+    MB += (float)bytes_read / 1000000;
+
+    std::cout << "\rSent: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+
   }
   file.close();
   close(serverSocket);

@@ -27,15 +27,21 @@ int clientRecv(int argc, char* argv[]) {
   recv(clientSocket, filename, filenameSize, 0);
   filename[filenameSize] = '\0';
 
+  int fileSize;
+  recv(clientSocket, &fileSize, sizeof(int), 0);
+
   std::ofstream file(filename, std::ios::binary);
   
   char buffer[BUFFER_SIZE];
   int bytes_recv;
+  float MB = 0;
 
   std::cout << "Recieving file: " << filename << std::endl;
   while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
     file.write(buffer, bytes_recv);
-    std::cout << "Recieved " << bytes_recv << " bytes\n";
+    MB += (float)bytes_recv / 1000000;
+
+    std::cout << "\rRecieved: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
   }
   file.close();
   close(clientSocket);
