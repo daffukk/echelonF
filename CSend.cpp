@@ -8,33 +8,23 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include "echelonheaders.h"
 
-int main(int argc, char* argv[]) {
-
-
-  if(argc < 2) {
-    std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
-  return 1;
-  }
-
-  char ip[17];
-  std::cout << "Enter server ip: ";
-  std::cin >> ip;
+int clientSend(int argc, char* argv[]) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(7777);
-  //serverAddress.sin_addr.s_addr = inet_addr(ip);
+  serverAddress.sin_port = htons(PORT);
   
-  struct hostent* host = gethostbyname(ip);
+  struct hostent* host = gethostbyname(argv[3]);
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr);
 
 
   connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-  const char* filename = argv[1];
+  const char* filename = argv[2];
 
   std::ifstream file(filename, std::ios::binary);
 
@@ -47,13 +37,28 @@ int main(int argc, char* argv[]) {
   send(clientSocket, &filenameSize, sizeof(int), 0);
   send(clientSocket, filename, filenameSize, 0);
 
-  char buffer[4096];
+  std::streampos fileSize = file.tellg();
+  file.seekg(0, std::ios::end);
+  fileSize = file.tellg() - fileSize;
+  file.seekg(0, std::ios::beg);
+
+  send(clientSocket, &fileSize, sizeof(int), 0);
+  
+
+  char buffer[BUFFER_SIZE];
   int bytes_read;
+  float MB = 0;
+
+
 
   while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
     send(clientSocket, buffer, bytes_read, 0);
+    MB += (float)bytes_read / 1000000;
+
+    std::cout << "\rSent: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
   }
 
+  std::cout << std::endl;
   file.close();
   close(clientSocket);
 

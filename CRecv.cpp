@@ -4,21 +4,17 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
+#include "echelonheaders.h"
 
-int main(int argc, char* argv[]) {
-
-  if(argc > 2){
-    std::cout << "Usage: " << argv[0] << " <ip>" << std::endl;
-    return 1;
-  }
+int clientRecv(int argc, char* argv[]) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(7777);
+  serverAddress.sin_port = htons(PORT);
 
-  struct hostent* host = gethostbyname(argv[1]);
+  struct hostent* host = gethostbyname(argv[2]);
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr);
 
   connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
@@ -33,7 +29,7 @@ int main(int argc, char* argv[]) {
 
   std::ofstream file(filename, std::ios::binary);
   
-  char buffer[4096];
+  char buffer[BUFFER_SIZE];
   int bytes_recv;
 
   std::cout << "Recieving file: " << filename << std::endl;

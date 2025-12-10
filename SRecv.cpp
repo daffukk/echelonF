@@ -6,13 +6,14 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include "echelonheaders.h"
 
-int main() {
+int serverRecv() {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(7777);
+  serverAddress.sin_port = htons(PORT);
   serverAddress.sin_addr.s_addr = INADDR_ANY;
 
   bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
@@ -27,18 +28,26 @@ int main() {
   char filename[256];
   recv(clientSocket, filename, filenameSize, 0);
   filename[filenameSize] = '\0';
+
+  int fileSize;
+  recv(clientSocket, &fileSize, sizeof(int), 0);
   
   std::ofstream file(filename, std::ios::binary);
 
-  char buffer[4096] = {0};
+  char buffer[BUFFER_SIZE] = {0};
   int bytes_recieved;
-  
+  float MB = 0;
+
   std::cout << "Recieving file: " << filename << std::endl;
 
   while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
     file.write(buffer, bytes_recieved);
-    std::cout << "Recieved " << bytes_recieved << " bytes" << std::endl;
+    MB += (float)bytes_recieved / 1000000;
+
+    std::cout << "\rRecieved: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
   }
+
+  std::cout << std::endl;
   file.close();
   close(serverSocket);
 

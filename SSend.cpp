@@ -1,3 +1,4 @@
+#include "echelonheaders.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -8,19 +9,13 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-int main(int argc, char* argv[]) {
-
-  if (argc < 2){
-    std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
-    return 1;
-  }
-
+int serverSend(int argc, char* argv[]) {
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(7777);
+  serverAddress.sin_port = htons(PORT);
   serverAddress.sin_addr.s_addr = INADDR_ANY;
 
   bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
@@ -29,7 +24,7 @@ int main(int argc, char* argv[]) {
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
-  const char* filename = argv[1];
+  const char* filename = argv[2];
 
   std::ifstream file(filename, std::ios::binary);
 
@@ -42,7 +37,7 @@ int main(int argc, char* argv[]) {
   send(clientSocket, &filenameSize, sizeof(int), 0);
   send(clientSocket, filename, filenameSize, 0);
 
-  char buffer[4096];
+  char buffer[BUFFER_SIZE];
   int bytes_read;
 
   while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
