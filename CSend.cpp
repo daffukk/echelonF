@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <netdb.h>
 #include <cstring>
 #include <fstream>
@@ -8,6 +9,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <cmath>
 #include "echelonheaders.h"
 
 int clientSend(int argc, char* argv[]) {
@@ -42,6 +44,7 @@ int clientSend(int argc, char* argv[]) {
   fileSize = file.tellg() - fileSize;
   file.seekg(0, std::ios::beg);
 
+
   send(clientSocket, &fileSize, sizeof(int), 0);
   
 
@@ -55,7 +58,7 @@ int clientSend(int argc, char* argv[]) {
     send(clientSocket, buffer, bytes_read, 0);
     MB += (float)bytes_read / 1000000;
 
-    std::cout << "\rSent: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
   }
 
   std::cout << std::endl;

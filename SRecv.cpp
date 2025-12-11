@@ -1,4 +1,7 @@
 #include <fstream>
+#include <iomanip>
+#include <ios>
+#include <cmath>
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -29,7 +32,7 @@ int serverRecv() {
   recv(clientSocket, filename, filenameSize, 0);
   filename[filenameSize] = '\0';
 
-  int fileSize;
+  std::streampos fileSize;
   recv(clientSocket, &fileSize, sizeof(int), 0);
   
   std::ofstream file(filename, std::ios::binary);
@@ -44,7 +47,7 @@ int serverRecv() {
     file.write(buffer, bytes_recieved);
     MB += (float)bytes_recieved / 1000000;
 
-    std::cout << "\rRecieved: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
   }
 
   std::cout << std::endl;

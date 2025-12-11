@@ -1,9 +1,11 @@
 #include <fstream>
+#include <iomanip>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <cmath>
 #include "echelonheaders.h"
 
 int clientRecv(int argc, char* argv[]) {
@@ -27,7 +29,7 @@ int clientRecv(int argc, char* argv[]) {
   recv(clientSocket, filename, filenameSize, 0);
   filename[filenameSize] = '\0';
 
-  int fileSize;
+  std::streampos fileSize;
   recv(clientSocket, &fileSize, sizeof(int), 0);
 
   std::ofstream file(filename, std::ios::binary);
@@ -41,7 +43,7 @@ int clientRecv(int argc, char* argv[]) {
     file.write(buffer, bytes_recv);
     MB += (float)bytes_recv / 1000000;
 
-    std::cout << "\rRecieved: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
   }
   file.close();
   close(clientSocket);

@@ -1,6 +1,7 @@
 #include "echelonheaders.h"
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -52,7 +53,7 @@ int serverSend(int argc, char* argv[]) {
     send(clientSocket, buffer, bytes_read, 0);
     MB += (float)bytes_read / 1000000;
 
-    std::cout << "\rSent: " << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
 
   }
   file.close();
