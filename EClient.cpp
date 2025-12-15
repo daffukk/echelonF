@@ -19,11 +19,13 @@ int main(int argc, char* argv[]) {
   }
   
   if(strcmp(argv[1], "recv") == 0) {
-    if(argc != 3) {
+    if(argc < 2) {
       std::cout << "Usage " << argv[0] << " recv <ip/domain>" << std::endl;
       return 1;
     }
+  }
 
+  if(argc >= 3 && strcmp(argv[1], "recv") == 0) {
     return clientRecv(argc, argv);
   }
 

@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include "echelonheaders.h"
 
-int serverRecv() {
+int serverRecv(bool continuous) {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
@@ -52,7 +52,13 @@ int serverRecv() {
 
   std::cout << std::endl;
   file.close();
-  close(serverSocket);
+  if(continuous) {
+    close(clientSocket);
+    close(serverSocket);
+  }
+  else{
+    close(serverSocket);
+  }
 
   return 0;
 }

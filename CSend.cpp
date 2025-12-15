@@ -9,7 +9,6 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <cmath>
 #include "echelonheaders.h"
 
 int clientSend(int argc, char* argv[]) {

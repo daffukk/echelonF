@@ -2,13 +2,22 @@
 #include <cstring>
 #include "echelonheaders.h"
 
+
+
 int main(int argc, char* argv[]) {
 
   if (argc < 2) {
     std::cout << "Usage: " << argv[0] << " <mode>" << std::endl;
     return 1;
   }
-  if(argc == 2 && strcmp(argv[1], "recv") == 0) {
+
+  if(argc >= 2 && strcmp(argv[1], "recv") == 0) {
+    if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
+      while(true) {
+        serverRecv(true);
+        std::cout << "Successfully received!\n";
+      }
+    }
     return serverRecv();
   }
 

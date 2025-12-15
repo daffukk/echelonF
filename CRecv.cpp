@@ -8,7 +8,7 @@
 #include <cmath>
 #include "echelonheaders.h"
 
-int clientRecv(int argc, char* argv[]) {
+int clientRecv(int argc, char* argv[], bool continuous) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
