@@ -26,7 +26,14 @@ int main(int argc, char* argv[]) {
   }
 
   if(argc >= 3 && strcmp(argv[1], "recv") == 0) {
-    return clientRecv(argc, argv);
+    if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
+      while(true){
+        clientRecv(argc, argv, true);
+      }
+    }
+    else{
+      return clientRecv(argc, argv);
+    }
   }
 
   return 0;

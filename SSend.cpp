@@ -57,6 +57,7 @@ int serverSend(int argc, char* argv[]) {
 
   }
   file.close();
+  close(clientSocket);
   close(serverSocket);
 
   return 0;

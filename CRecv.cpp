@@ -18,35 +18,36 @@ int clientRecv(int argc, char* argv[], bool continuous) {
 
   struct hostent* host = gethostbyname(argv[2]);
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr);
+ 
 
-  connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+  while(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) >= 0) {
+    int filenameSize;
+    recv(clientSocket, &filenameSize, sizeof(int), 0);
 
-
-  int filenameSize;
-  recv(clientSocket, &filenameSize, sizeof(int), 0);
-
-  char filename[256];
-  recv(clientSocket, filename, filenameSize, 0);
-  filename[filenameSize] = '\0';
-
-  std::streampos fileSize;
-  recv(clientSocket, &fileSize, sizeof(int), 0);
-
-  std::ofstream file(filename, std::ios::binary);
+    char filename[256];
+    recv(clientSocket, filename, filenameSize, 0);
+    filename[filenameSize] = '\0';
   
-  char buffer[BUFFER_SIZE];
-  int bytes_recv;
-  float MB = 0;
-
-  std::cout << "Recieving file: " << filename << std::endl;
-  while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-    file.write(buffer, bytes_recv);
-    MB += (float)bytes_recv / 1000000;
-
-    std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    std::streampos fileSize;
+    recv(clientSocket, &fileSize, sizeof(int), 0);
+  
+    std::ofstream file(filename, std::ios::binary);
+    
+    char buffer[BUFFER_SIZE];
+    int bytes_recv;
+    float MB = 0;
+  
+    std::cout << "Recieving file: " << filename << std::endl;
+    while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+      file.write(buffer, bytes_recv);
+      MB += (float)bytes_recv / 1000000;
+  
+      std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    }
+    std::cout << std::endl;
+    file.close();
   }
-  file.close();
-  close(clientSocket);
 
+  close(clientSocket);
   return 0;
 }
