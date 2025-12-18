@@ -4,11 +4,12 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <netinet/in.h>
+#include <thread>
+#include <chrono>
 #include <unistd.h>
-#include <cmath>
 #include "echelonheaders.h"
 
-int clientRecv(int argc, char* argv[], bool continuous) {
+int clientRecv(int argc, char* argv[], bool continuous, float speed) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -38,11 +39,25 @@ int clientRecv(int argc, char* argv[], bool continuous) {
     float MB = 0;
   
     std::cout << "Recieving file: " << filename << std::endl;
-    while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-      file.write(buffer, bytes_recv);
-      MB += (float)bytes_recv / 1000000;
+
+    if(speed > 0) {
+      int sleepDuration = calculateSpeed(speed);
+
+      while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+        file.write(buffer, bytes_recv);
+        MB += (float)bytes_recv / 1000000;
   
-      std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+        std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+        std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
+      }
+    }
+    else {
+      while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+        file.write(buffer, bytes_recv);
+        MB += (float)bytes_recv / 1000000;
+  
+        std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+      }
     }
     std::cout << std::endl;
     file.close();

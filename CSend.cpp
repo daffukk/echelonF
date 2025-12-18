@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <sys/socket.h>
+#include <thread>
+#include <chrono>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -11,7 +13,7 @@
 #include <netinet/in.h>
 #include "echelonheaders.h"
 
-int clientSend(int argc, char* argv[]) {
+int clientSend(int argc, char* argv[], float speed) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -51,13 +53,26 @@ int clientSend(int argc, char* argv[]) {
   int bytes_read;
   float MB = 0;
 
+  if(speed > 0) {
+    int sleepDuration = calculateSpeed(speed);
 
+    while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
+      send(clientSocket, buffer, bytes_read, 0);
+      MB += (float)bytes_read / 1000000;
 
-  while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-    send(clientSocket, buffer, bytes_read, 0);
-    MB += (float)bytes_read / 1000000;
+      std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+      
+      std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
+    }
+  }
+  else {
+    while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
+      send(clientSocket, buffer, bytes_read, 0);
+      MB += (float)bytes_read / 1000000;
 
-    std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+      std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    }
+
   }
 
   std::cout << std::endl;

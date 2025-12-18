@@ -10,12 +10,14 @@ int main(int argc, char* argv[]) {
   }
 
   if(strcmp(argv[1], "send") == 0) {
-    if(argc != 4) {
-      std::cout << "Usage: " << argv[0] << " send <file> <ip/domain>" << std::endl;
-      return 1;
-    }
-    
-    return clientSend(argc, argv);
+    float speed = 0;
+
+    float tempSpeed = findFlagValue(argc, argv, "--speed=");
+    if(tempSpeed > 0) {
+      speed = tempSpeed; 
+    } 
+
+    return clientSend(argc, argv, speed);
   }
   
   if(strcmp(argv[1], "recv") == 0) {
@@ -26,14 +28,24 @@ int main(int argc, char* argv[]) {
   }
 
   if(argc >= 3 && strcmp(argv[1], "recv") == 0) {
+    bool continuous = false;
+    float speed = 0;
+
     if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
-      while(true){
-        clientRecv(argc, argv, true);
-      }
+      continuous = true;
     }
-    else{
-      return clientRecv(argc, argv);
+    
+    float tempSpeed = findFlagValue(argc, argv, "--speed=");
+    if(tempSpeed > 0) {
+      speed = tempSpeed; 
     }
+    
+    while(continuous){
+      clientRecv(argc, argv, continuous, speed);
+    }
+
+    return clientRecv(argc, argv, continuous, speed);
+  
   }
 
   return 0;

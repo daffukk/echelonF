@@ -2,6 +2,8 @@
 #include <cstring>
 #include <fstream>
 #include <iomanip>
+#include <thread>
+#include <chrono>
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -10,7 +12,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-int serverSend(int argc, char* argv[]) {
+int serverSend(int argc, char* argv[], float speed) {
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -49,13 +51,27 @@ int serverSend(int argc, char* argv[]) {
   int bytes_read;
   float MB = 0;
 
-  while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-    send(clientSocket, buffer, bytes_read, 0);
-    MB += (float)bytes_read / 1000000;
+  if(speed > 0) {
+    int sleepDuration = calculateSpeed(speed);
 
-    std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
+      send(clientSocket, buffer, bytes_read, 0);
+      MB += (float)bytes_read / 1000000;
 
+      std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+
+      std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
+    }
   }
+  else {
+    while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
+      send(clientSocket, buffer, bytes_read, 0);
+      MB += (float)bytes_read / 1000000;
+  
+      std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+    }
+  }
+
   file.close();
   close(clientSocket);
   close(serverSocket);
