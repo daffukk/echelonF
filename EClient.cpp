@@ -11,13 +11,19 @@ int main(int argc, char* argv[]) {
 
   if(strcmp(argv[1], "send") == 0) {
     float speed = 0;
+    std::string passkey = "";
 
     float tempSpeed = findFlagValue(argc, argv, "--speed=");
     if(tempSpeed > 0) {
       speed = tempSpeed; 
     } 
 
-    return clientSend(argc, argv, speed);
+    std::string tempPasskey = findFlagValueStr(argc, argv, "--passkey=");
+    if(tempPasskey != "" && strlen(tempPasskey.c_str()) > 0){
+      passkey = tempPasskey;
+    }
+
+    return clientSend(argc, argv, speed, passkey.c_str());
   }
   
   if(strcmp(argv[1], "recv") == 0) {

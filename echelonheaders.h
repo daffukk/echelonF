@@ -3,10 +3,10 @@
 #include <iostream>
 #include <string>
 
-int clientSend(int argc, char* argv[], float speed=0);
+int clientSend(int argc, char* argv[], float speed=0, const char* passkey="");
 int clientRecv(int argc, char* argv[], bool continuous=false, float speed=0);
 int serverSend(int argc, char* argv[], float speed=0);
-int serverRecv(bool continuous=false, float speed=0);
+int serverRecv(bool continuous=false, float speed=0, const char* passkey="");
 
 inline bool flagFinder(int argc, char* argv[], const char* flag) {
   for (int i = 1; i < argc; i++) {
@@ -34,6 +34,17 @@ inline float findFlagValue(int argc, char* argv[], const char* flag) {
   return -1;
 }
 
+inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
+  for(int i=1; i < argc; i++) {
+    std::string arg = argv[i];
+    if(arg.find(flag) == 0) {
+      std::string flagValue = arg.substr(strlen(flag));
+      return flagValue;
+    }
+  }
+  return "";
+}
+
 inline int calculateSpeed(float speed) {
   float oneMegabytePerSec = 250; // EQUALS 250 ONLY WHEN BUFFER_SIZE EQUALS 4096!!!! Would be fixed
   float sleepDuration = oneMegabytePerSec / speed; 
@@ -46,9 +57,10 @@ inline void printClientHelp(int argc, char* argv[]) {
     << "\tsend <FILE> <IP/DOMAIN> \t Send files\n"
     << "\trecv <IP/DOMAIN> \t Receive files\n"
     << "Options:\n"
-    << "\t-h, --help \t show this text"
-    << "\t-a, --always \t receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode\n"
-    << "\t--speed= \t specify sending/receiving speed. Accept only int numbers.";
+    << "\t-h, --help \t Show this text"
+    << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
+    << "\t--speed= \t Specify sending/receiving speed. Accept only int numbers."
+    << "\t--passkey= \t Set passkey to an application, very useful flag if you are not in local network.";
     
 }
 

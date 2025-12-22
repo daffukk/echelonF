@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 #include "echelonheaders.h"
 
-int clientSend(int argc, char* argv[], float speed) {
+int clientSend(int argc, char* argv[], float speed, const char* passkey) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -32,8 +32,15 @@ int clientSend(int argc, char* argv[], float speed) {
   std::ifstream file(filename, std::ios::binary);
 
   if(!file.is_open()) {
-    std::cout << "error: can't open file " << filename << std::endl;
+    std::cerr << "Error: can't open file " << filename << std::endl;
     return 1;
+  }
+
+  if(passkey != nullptr && strlen(passkey) > 0) {
+    int passkeyLength = strlen(passkey);
+    send(clientSocket, &passkeyLength, sizeof(int), 0);
+
+    send(clientSocket, passkey, passkeyLength, 0);
   }
 
   int filenameSize = strlen(filename);

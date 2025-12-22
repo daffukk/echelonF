@@ -14,7 +14,8 @@ int main(int argc, char* argv[]) {
   if(argc >= 2 && strcmp(argv[1], "recv") == 0) {
     bool continuous = false;
     float speed = 0;
-
+    std::string passkey = "";
+    
     if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
       continuous = true;
     }
@@ -24,11 +25,16 @@ int main(int argc, char* argv[]) {
       speed = tempSpeed; 
     }
 
-    while(continuous) {
-      serverRecv(continuous, speed);
+    std::string tempPasskey = findFlagValueStr(argc, argv, "--passkey=");
+    if(tempPasskey != "" && strlen(tempPasskey.c_str()) > 0) {
+      passkey = tempPasskey;
     }
 
-    return serverRecv(continuous, speed);
+    while(continuous) {
+      serverRecv(continuous, speed, passkey.c_str());
+    }
+
+    return serverRecv(continuous, speed, passkey.c_str());
     
   }
 

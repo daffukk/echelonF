@@ -10,9 +10,10 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <string.h>
 #include "echelonheaders.h"
 
-int serverRecv(bool continuous, float speed) {
+int serverRecv(bool continuous, float speed, const char* passkey) {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
@@ -25,6 +26,31 @@ int serverRecv(bool continuous, float speed) {
   listen(serverSocket, 5);
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
+
+  if(passkey != nullptr && strlen(passkey) > 0) {
+    bool logged = false;
+    while(logged != true) {
+   
+      int userPasskeyLenght;
+      recv(clientSocket, &userPasskeyLenght, sizeof(int), 0);
+  
+      char userPasskey[256];
+      recv(clientSocket, userPasskey, userPasskeyLenght, 0);
+      userPasskey[userPasskeyLenght] = '\0';
+  
+      if(strcmp(userPasskey, passkey) != 0) {
+        std::cout << "Wrong passkey." << std::endl;
+        close(clientSocket);
+
+        clientSocket = accept(serverSocket, nullptr, nullptr);
+        continue;
+      }
+      else {
+        std::cout << "Passkey accepted." << std::endl;
+        logged = true;
+      }
+    }
+  }
 
   int filenameSize;
   recv(clientSocket, &filenameSize, sizeof(int), 0);
