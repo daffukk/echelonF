@@ -8,6 +8,11 @@ int clientRecv(int argc, char* argv[], bool continuous=false, float speed=0, con
 int serverSend(int argc, char* argv[], float speed=0, const char* passkey="");
 int serverRecv(bool continuous=false, float speed=0, const char* passkey="");
 
+
+constexpr int PORT = 7777;
+constexpr int BUFFER_SIZE = 4096;
+
+
 inline bool flagFinder(int argc, char* argv[], const char* flag) {
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], flag) == 0) {
@@ -46,7 +51,7 @@ inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
 }
 
 inline int calculateSpeed(float speed) {
-  float oneMegabytePerSec = 250; // EQUALS 250 ONLY WHEN BUFFER_SIZE EQUALS 4096!!!! Would be fixed
+  float oneMegabytePerSec = 1000 / (BUFFER_SIZE / 1024);
   float sleepDuration = oneMegabytePerSec / speed; 
   return (int)sleepDuration;
 }
@@ -77,5 +82,4 @@ inline void printServerHelp(int argc, char* argv[]) {
     
 }
 
-constexpr int PORT = 7777;
-constexpr int BUFFER_SIZE = 4096; // IF YOU WILL CHANGE THAT, YOU WILL HAVE TO MODIFY calculateSpeed() FUNCTION!!!! Would be fixed
+
