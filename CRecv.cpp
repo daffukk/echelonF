@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "echelonheaders.h"
 
-int clientRecv(int argc, char* argv[], bool continuous, float speed) {
+int clientRecv(int argc, char* argv[], bool continuous, float speed, const char* passkey) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -22,6 +22,14 @@ int clientRecv(int argc, char* argv[], bool continuous, float speed) {
  
 
   while(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) >= 0) {
+    
+    if(passkey != nullptr && strlen(passkey) > 0) {
+      int passkeyLength = strlen(passkey);
+      send(clientSocket, &passkeyLength, sizeof(int), 0);
+
+      send(clientSocket, passkey, passkeyLength, 0);
+    }
+
     int filenameSize;
     recv(clientSocket, &filenameSize, sizeof(int), 0);
 

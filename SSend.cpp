@@ -12,7 +12,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-int serverSend(int argc, char* argv[], float speed) {
+int serverSend(int argc, char* argv[], float speed, const char* passkey) {
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -32,8 +32,32 @@ int serverSend(int argc, char* argv[], float speed) {
   std::ifstream file(filename, std::ios::binary);
 
   if(!file.is_open()) {
-    std::cout << "error: can't open file " << filename << std::endl;
+    std::cerr << "error: can't open file " << filename << std::endl;
     return 1;
+  }
+
+  if(passkey != nullptr && strlen(passkey) > 0) {
+    bool logged = false;
+    while(logged != true) {
+      int userPasskeyLength;
+      recv(clientSocket, &userPasskeyLength, sizeof(int), 0);
+  
+      char userPasskey[256];
+      recv(clientSocket, userPasskey, userPasskeyLength, 0);
+      userPasskey[userPasskeyLength] = '\0';
+  
+      if(strcmp(userPasskey, passkey) != 0) {
+        std::cout << "Wrong passkey." << std::endl;
+        
+        close(clientSocket);
+        close(serverSocket);
+        return 1;
+      }
+      else {
+        std::cout << "Passkey accepted." << std::endl;
+        logged = true;
+      }
+    }
   }
   
   int filenameSize = strlen(filename);

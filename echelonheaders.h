@@ -4,8 +4,8 @@
 #include <string>
 
 int clientSend(int argc, char* argv[], float speed=0, const char* passkey="");
-int clientRecv(int argc, char* argv[], bool continuous=false, float speed=0);
-int serverSend(int argc, char* argv[], float speed=0);
+int clientRecv(int argc, char* argv[], bool continuous=false, float speed=0, const char* passkey="");
+int serverSend(int argc, char* argv[], float speed=0, const char* passkey="");
 int serverRecv(bool continuous=false, float speed=0, const char* passkey="");
 
 inline bool flagFinder(int argc, char* argv[], const char* flag) {
