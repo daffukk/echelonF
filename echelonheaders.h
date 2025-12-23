@@ -59,8 +59,21 @@ inline void printClientHelp(int argc, char* argv[]) {
     << "Options:\n"
     << "\t-h, --help \t Show this text"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
-    << "\t--speed= \t Specify sending/receiving speed. Accept only int numbers."
-    << "\t--passkey= \t Set passkey to an application, very useful flag if you are not in local network.";
+    << "\t--speed= \t Specify sending/receiving speed. Accept only int numbers.\n"
+    << "\t--passkey= \t Set passkey to an application, very useful flag if you are not in local network.\n";
+    
+}
+
+inline void printServerHelp(int argc, char* argv[]) {
+  std::cout << "Usage: " << argv[0] << " <MODE> <OPTIONS>\n"
+    << "Modes:\n"
+    << "\trecv \t Receive files\n"
+    << "\tsend <FILE> \t Send files\n"
+    << "Options:\n"
+    << "\t-h, --help \t Show this text"
+    << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
+    << "\t--speed= \t Specify sending/receiving speed. Accept only int numbers.\n"
+    << "\t--passkey= \t Set passkey to an application, very useful flag if you are not in local network.\n";
     
 }
 

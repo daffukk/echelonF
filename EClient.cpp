@@ -5,8 +5,13 @@
 int main(int argc, char* argv[]) {
 
   if(argc < 2) {
-    std::cout << "Usage: " << argv[0] << " <mode>" << std::endl;
-    return 1;
+    printClientHelp(argc, argv);
+    return 0;
+  }
+
+  if(flagFinder(argc, argv, "--help") || flagFinder(argc, argv, "-h")) {
+    printClientHelp(argc, argv);
+    return 0;
   }
 
   if(strcmp(argv[1], "send") == 0) {
