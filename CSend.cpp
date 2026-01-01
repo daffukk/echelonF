@@ -21,13 +21,13 @@ int clientSend(int argc, char* argv[], float speed, const char* passkey) {
   serverAddress.sin_family = AF_INET;
   serverAddress.sin_port = htons(PORT);
   
-  struct hostent* host = gethostbyname(argv[3]);
+  struct hostent* host = gethostbyname(argv[4]);
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr);
 
 
   connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-  const char* filename = argv[2];
+  const char* filename = argv[3];
 
   std::ifstream file(filename, std::ios::binary);
 

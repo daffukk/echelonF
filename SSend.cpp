@@ -27,7 +27,7 @@ int serverSend(int argc, char* argv[], float speed, const char* passkey) {
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
-  const char* filename = argv[2];
+  const char* filename = argv[3];
 
   std::ifstream file(filename, std::ios::binary);
 

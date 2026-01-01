@@ -17,7 +17,7 @@ int clientRecv(int argc, char* argv[], bool continuous, float speed, const char*
   serverAddress.sin_family = AF_INET;
   serverAddress.sin_port = htons(PORT);
 
-  struct hostent* host = gethostbyname(argv[2]);
+  struct hostent* host = gethostbyname(argv[3]);
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr);
  
 

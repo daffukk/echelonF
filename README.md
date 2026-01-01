@@ -4,7 +4,7 @@ EchelonF is a tool, that provides file transfering between Unix-based machines. 
 
 # Compiling
 
-To compile application just run `./build.sh`
+To compile application just run **`./build.sh`**
 
 # Usage and examples
 
@@ -16,15 +16,15 @@ First of all, you need to compile the application.
 Both server and client instructions can be shown be using these commands:
 
 ```bash
-./EServer --help
-./EClient --help
+./ecf --help
 ```
 
-# Alias
-If you want, you can set it up in `.zshrc` or `.bashrc`
+# Tips and issues
 
-```bash
-alias efc=/path/to/client/EClient
-```
+> [!TIP]
+> You can create a short alias by adding this line to your shell configuration file(e.g., `~/.bashrc` or `~/.zshrc`):
+> ```bash
+> alias ecf=/path/to/ecf
+> ```
 
 

@@ -58,11 +58,11 @@ inline int calculateSpeed(float speed) {
 
 inline void printClientHelp(int argc, char* argv[]) {
   std::cout 
-    << "Usage: " << argv[0] << " <MODE> <OPTIONS>\n"
+    << "Usage: " << argv[0] << " client <MODE> <OPTIONS>\n"
     << "\n"
     << "Examples:\n"
-    << "\t" << argv[0] << " send video.mp4 dwpo.xyz --passkey=abc12345\n"
-    << "\t" << argv[0] << " recv dwpo.xyz --passkey=abc12345\n"
+    << "\t" << argv[0] << " client send video.mp4 dwpo.xyz --passkey=abc12345\n"
+    << "\t" << argv[0] << " client recv dwpo.xyz --passkey=abc12345\n"
     << "\n"
     << "Modes:\n"
     << "\tsend <FILE> <IP/DOMAIN> \t Send files\n"
@@ -78,11 +78,11 @@ inline void printClientHelp(int argc, char* argv[]) {
 
 inline void printServerHelp(int argc, char* argv[]) {
   std::cout 
-    << "Usage: " << argv[0] << " <MODE> <OPTIONS>\n"
+    << "Usage: " << argv[0] << "server <MODE> <OPTIONS>\n"
     << "\n"
     << "Examples:\n"
-    << "\t" << argv[0] << " recv --passkey=abc12345\n"
-    << "\t" << argv[0] << " send video.mp4 --passkey=abc12345\n"
+    << "\t" << argv[0] << " server recv --passkey=abc12345\n"
+    << "\t" << argv[0] << " server send video.mp4 --passkey=abc12345\n"
     << "\n"
     << "Modes:\n"
     << "\trecv \t Receive files\n"

@@ -4,5 +4,4 @@ project(echelonF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(EServer SRecv.cpp SSend.cpp EServer.cpp)
-add_executable(EClient CSend.cpp CRecv.cpp EClient.cpp)
+add_executable(ecf SRecv.cpp SSend.cpp CSend.cpp CRecv.cpp main.cpp)

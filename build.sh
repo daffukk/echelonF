@@ -8,5 +8,5 @@ cd build
 cmake ..
 make
 
-mv -f EServer EClient ..
+mv -f ecf ..
 echo "Compilation completed."
