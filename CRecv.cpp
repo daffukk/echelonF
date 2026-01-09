@@ -45,7 +45,10 @@ int clientRecv(int argc, char* argv[], bool continuous, float speed, const char*
     char buffer[BUFFER_SIZE];
     int bytes_recv;
     float MB = 0;
-  
+    std::string progressBar(50, ' ');
+    float fileSizeMB = (float)fileSize / 1000000;
+
+
     std::cout << "Recieving file: " << filename << std::endl;
 
     if(speed > 0) {
@@ -55,7 +58,17 @@ int clientRecv(int argc, char* argv[], bool continuous, float speed, const char*
         file.write(buffer, bytes_recv);
         MB += (float)bytes_recv / 1000000;
   
-        std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+        int percent = (int)(( MB / fileSizeMB) * 100);
+  
+        if(percent % 2 == 0){
+          progressBar[percent / 2] = '=';
+        }
+  
+  
+        std::cout << "\r[" << progressBar << "] " 
+          << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
+          << percent << "% "<< std::flush;
+
         std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
       }
     }
@@ -63,8 +76,17 @@ int clientRecv(int argc, char* argv[], bool continuous, float speed, const char*
       while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
         file.write(buffer, bytes_recv);
         MB += (float)bytes_recv / 1000000;
+
+        int percent = (int)(( MB / fileSizeMB) * 100);
   
-        std::cout << "\rRecieved: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
+        if(percent % 2 == 0){
+          progressBar[percent / 2] = '=';
+        }
+  
+  
+        std::cout << "\r[" << progressBar << "] " 
+          << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
+          << percent << "% "<< std::flush;
       }
     }
     std::cout << std::endl;

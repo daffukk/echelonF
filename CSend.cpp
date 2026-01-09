@@ -59,6 +59,8 @@ int clientSend(int argc, char* argv[], float speed, const char* passkey) {
   char buffer[BUFFER_SIZE];
   int bytes_read;
   float MB = 0;
+  std::string progressBar(50, ' ');
+  float fileSizeMB = (float)fileSize / 1000000;
 
   if(speed > 0) {
     int sleepDuration = calculateSpeed(speed);
@@ -67,8 +69,17 @@ int clientSend(int argc, char* argv[], float speed, const char* passkey) {
       send(clientSocket, buffer, bytes_read, 0);
       MB += (float)bytes_read / 1000000;
 
-      std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
-      
+      int percent = (int)(( MB / fileSizeMB) * 100);
+
+      if(percent % 2 == 0){
+        progressBar[percent / 2] = '=';
+      }
+
+
+      std::cout << "\r[" << progressBar << "] " 
+        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
+        << percent << "% "<< std::flush;
+
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
     }
   }
@@ -77,9 +88,17 @@ int clientSend(int argc, char* argv[], float speed, const char* passkey) {
       send(clientSocket, buffer, bytes_read, 0);
       MB += (float)bytes_read / 1000000;
 
-      std::cout << "\rSent: " << std::fixed << std::setprecision(1) << MB << " MB " << (int)(( MB / ((float)fileSize / 1000000)) * 100) << "% "<< std::flush;
-    }
+      int percent = (int)(( MB / fileSizeMB) * 100);
 
+      if(percent % 2 == 0){
+        progressBar[percent / 2] = '=';
+      }
+
+
+      std::cout << "\r[" << progressBar << "] " 
+        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
+        << percent << "% "<< std::flush;
+    }
   }
 
   std::cout << std::endl;
