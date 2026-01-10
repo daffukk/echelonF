@@ -13,7 +13,7 @@
 #include <string.h>
 #include "echelonheaders.h"
 
-int serverRecv(bool continuous, float speed, const char* passkey) {
+int serverRecv(bool continuous, double speed, const char* passkey) {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
@@ -66,9 +66,9 @@ int serverRecv(bool continuous, float speed, const char* passkey) {
 
   char buffer[BUFFER_SIZE] = {0};
   int bytes_recieved;
-  float MB = 0;
+  double MB = 0;
   std::string progressBar(50, ' ');
-  float fileSizeMB = (float)fileSize / 1000000;
+  double fileSizeMB = (double)fileSize / 1000000;
 
 
   std::cout << "Recieving file: " << filename << std::endl;
@@ -79,7 +79,7 @@ int serverRecv(bool continuous, float speed, const char* passkey) {
 
     while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
       file.write(buffer, bytes_recieved);
-      MB += (float)bytes_recieved / 1000000;
+      MB += (double)bytes_recieved / 1000000;
   
       int percent = (int)(( MB / fileSizeMB) * 100);
 
@@ -99,7 +99,7 @@ int serverRecv(bool continuous, float speed, const char* passkey) {
   else {
     while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
       file.write(buffer, bytes_recieved);
-      MB += (float)bytes_recieved / 1000000;
+      MB += (double)bytes_recieved / 1000000;
 
       int percent = (int)(( MB / fileSizeMB) * 100);
 

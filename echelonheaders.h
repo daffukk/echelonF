@@ -3,10 +3,10 @@
 #include <iostream>
 #include <string>
 
-int clientSend(int argc, char* argv[], float speed=0, const char* passkey="");
-int clientRecv(int argc, char* argv[], bool continuous=false, float speed=0, const char* passkey="");
-int serverSend(int argc, char* argv[], float speed=0, const char* passkey="");
-int serverRecv(bool continuous=false, float speed=0, const char* passkey="");
+int clientSend(int argc, char* argv[], double speed=0, const char* passkey="");
+int clientRecv(int argc, char* argv[], bool continuous=false, double speed=0, const char* passkey="");
+int serverSend(int argc, char* argv[], double speed=0, const char* passkey="");
+int serverRecv(bool continuous=false, double speed=0, const char* passkey="");
 
 
 constexpr int PORT = 7777;
@@ -22,11 +22,11 @@ inline bool flagFinder(int argc, char* argv[], const char* flag) {
   return false;
 }
 
-inline float findFlagValue(int argc, char* argv[], const char* flag) {
+inline double findFlagValue(int argc, char* argv[], const char* flag) {
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
       if(arg.find(flag) == 0) {
-        float flagValue = std::stof(arg.substr(strlen(flag)));
+        double flagValue = std::stof(arg.substr(strlen(flag)));
 
         if(flagValue < 0) {
           std::cout << "Invalid argument value: " << arg << std::endl;
@@ -50,9 +50,9 @@ inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
   return "";
 }
 
-inline int calculateSpeed(float speed) {
-  float oneMegabytePerSec = 1000 / (BUFFER_SIZE / 1024);
-  float sleepDuration = oneMegabytePerSec / speed; 
+inline int calculateSpeed(double speed) {
+  double oneMegabytePerSec = 1000 / (BUFFER_SIZE / 1024);
+  double sleepDuration = oneMegabytePerSec / speed; 
   return (int)sleepDuration;
 }
 

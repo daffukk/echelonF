@@ -35,14 +35,14 @@ int main(int argc, char* argv[]) {
 
   if(argc >= 3 && strcmp(argv[1], "server") == 0){
     bool continuous = false;
-    float speed = 0;
+    double speed = 0;
     std::string passkey = "";
 
     if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
       continuous = true;
     }
     
-    float tempSpeed = findFlagValue(argc, argv, "--speed=");
+    double tempSpeed = findFlagValue(argc, argv, "--speed=");
     if(tempSpeed > 0) {
       speed = tempSpeed; 
     }
@@ -70,14 +70,14 @@ int main(int argc, char* argv[]) {
 
   if(argc >= 4 && strcmp(argv[1], "client") == 0) {
     bool continuous = false;
-    float speed = 0;
+    double speed = 0;
     std::string passkey = "";
 
     if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
       continuous = true;
     }
     
-    float tempSpeed = findFlagValue(argc, argv, "--speed=");
+    double tempSpeed = findFlagValue(argc, argv, "--speed=");
     if(tempSpeed > 0) {
       speed = tempSpeed; 
     }

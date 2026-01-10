@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 #include "echelonheaders.h"
 
-int clientSend(int argc, char* argv[], float speed, const char* passkey) {
+int clientSend(int argc, char* argv[], double speed, const char* passkey) {
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -58,16 +58,16 @@ int clientSend(int argc, char* argv[], float speed, const char* passkey) {
 
   char buffer[BUFFER_SIZE];
   int bytes_read;
-  float MB = 0;
+  double MB = 0;
   std::string progressBar(50, ' ');
-  float fileSizeMB = (float)fileSize / 1000000;
+  double fileSizeMB = (double)fileSize / 1000000;
 
   if(speed > 0) {
     int sleepDuration = calculateSpeed(speed);
 
     while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
       send(clientSocket, buffer, bytes_read, 0);
-      MB += (float)bytes_read / 1000000;
+      MB += (double)bytes_read / 1000000;
 
       int percent = (int)(( MB / fileSizeMB) * 100);
 
@@ -86,7 +86,7 @@ int clientSend(int argc, char* argv[], float speed, const char* passkey) {
   else {
     while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
       send(clientSocket, buffer, bytes_read, 0);
-      MB += (float)bytes_read / 1000000;
+      MB += (double)bytes_read / 1000000;
 
       int percent = (int)(( MB / fileSizeMB) * 100);
 
