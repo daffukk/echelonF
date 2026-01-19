@@ -1,4 +1,4 @@
-# Welcome
+# EchelonF
 
 EchelonF is a tool, that provides file transfering between Unix-based machines. Please report about all bugs in issues section.
 
@@ -26,5 +26,10 @@ Both server and client instructions can be shown be using these commands:
 > ```bash
 > alias ecf=/path/to/ecf
 > ```
+
+---
+
+## License
+This project is licensed under [MIT](LICENSE).
 
 
