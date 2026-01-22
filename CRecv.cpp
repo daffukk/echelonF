@@ -64,11 +64,10 @@ int clientRecv(int argc, char* argv[], bool continuous, double speed, const char
           progressBar[percent / 2] = '=';
         }
   
-  
-        std::cout << "\r[" << progressBar << "] " 
-          << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
-          << percent << "% "<< std::flush;
 
+        std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
+        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
+  
         std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
       }
     }
@@ -83,10 +82,10 @@ int clientRecv(int argc, char* argv[], bool continuous, double speed, const char
           progressBar[percent / 2] = '=';
         }
   
-  
-        std::cout << "\r[" << progressBar << "] " 
-          << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
-          << percent << "% "<< std::flush;
+
+        std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
+        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
+
       }
     }
     std::cout << std::endl;

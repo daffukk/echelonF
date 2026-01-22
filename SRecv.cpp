@@ -88,9 +88,8 @@ int serverRecv(bool continuous, double speed, const char* passkey) {
       }
 
 
-      std::cout << "\r[" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
-        << percent << "% "<< std::flush;
+      std::cout << "\rProgress: " << percent << "%" << " [" << color::cyan << progressBar << color::reset << "] " 
+        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
 
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
     }
@@ -108,9 +107,8 @@ int serverRecv(bool continuous, double speed, const char* passkey) {
       }
 
 
-      std::cout << "\r[" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " 
-        << percent << "% "<< std::flush;
+      std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
+        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
 
     }
   }
