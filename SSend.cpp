@@ -73,46 +73,22 @@ int serverSend(int argc, char* argv[], double speed, const char* passkey) {
 
   char buffer[BUFFER_SIZE];
   int bytes_read;
+  int sleepDuration;
   double MB = 0;
   std::string progressBar(50, ' ');
   double fileSizeMB = (double)fileSize / 1000000;
 
   if(speed > 0) {
-    int sleepDuration = calculateSpeed(speed);
+    sleepDuration = calculateSpeed(speed);
+  }
 
-    while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-      send(clientSocket, buffer, bytes_read, 0);
-      MB += (double)bytes_read / 1000000;
+  while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
+    updateSendProgress(clientSocket, buffer, bytes_read, MB, fileSizeMB);
 
-      int percent = (int)(( MB / fileSizeMB) * 100);
-
-      if(percent % 2 == 0){
-        progressBar[percent / 2] = '=';
-      }
-
-
-      std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
-
+    if(speed > 0) {
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
     }
-  }
-  else {
-    while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-      send(clientSocket, buffer, bytes_read, 0);
-      MB += (double)bytes_read / 1000000;
 
-      int percent = (int)(( MB / fileSizeMB) * 100);
-
-      if(percent % 2 == 0){
-        progressBar[percent / 2] = '=';
-      }
-
-
-      std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
-
-    }
   }
 
   file.close();

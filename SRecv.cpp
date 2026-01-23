@@ -1,10 +1,10 @@
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <sys/socket.h>
 #include <thread>
-#include <chrono>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -12,6 +12,9 @@
 #include <netinet/in.h>
 #include <string.h>
 #include "echelonheaders.h"
+
+
+
 
 int serverRecv(bool continuous, double speed, const char* passkey) {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -66,53 +69,25 @@ int serverRecv(bool continuous, double speed, const char* passkey) {
 
   char buffer[BUFFER_SIZE] = {0};
   int bytes_recieved;
+  int sleepDuration;
   double MB = 0;
-  std::string progressBar(50, ' ');
   double fileSizeMB = (double)fileSize / 1000000;
 
 
   std::cout << "Recieving file: " << filename << std::endl;
-
   if(speed > 0) {
+    sleepDuration = calculateSpeed(speed);
+  }
 
-    int sleepDuration = calculateSpeed(speed);
+  while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+    updateReceiveProgress(file, buffer, bytes_recieved, MB, fileSizeMB);
 
-    while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-      file.write(buffer, bytes_recieved);
-      MB += (double)bytes_recieved / 1000000;
-  
-      int percent = (int)(( MB / fileSizeMB) * 100);
-
-      if(percent % 2 == 0){
-        progressBar[percent / 2] = '=';
-      }
-
-
-      std::cout << "\rProgress: " << percent << "%" << " [" << color::cyan << progressBar << color::reset << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
-
+    if(speed > 0) {
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
-    }
-
-  } 
-  else {
-    while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-      file.write(buffer, bytes_recieved);
-      MB += (double)bytes_recieved / 1000000;
-
-      int percent = (int)(( MB / fileSizeMB) * 100);
-
-      if(percent % 2 == 0){
-        progressBar[percent / 2] = '=';
-      }
-
-
-      std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
-
     }
   }
 
+  
   std::cout << std::endl;
   file.close();
 

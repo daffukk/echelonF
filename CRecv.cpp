@@ -44,53 +44,27 @@ int clientRecv(int argc, char* argv[], bool continuous, double speed, const char
     
     char buffer[BUFFER_SIZE];
     int bytes_recv;
+    int sleepDuration;
     double MB = 0;
-    std::string progressBar(50, ' ');
     double fileSizeMB = (double)fileSize / 1000000;
 
 
     std::cout << "Recieving file: " << filename << std::endl;
-
     if(speed > 0) {
-      int sleepDuration = calculateSpeed(speed);
-
-      while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-        file.write(buffer, bytes_recv);
-        MB += (double)bytes_recv / 1000000;
-  
-        int percent = (int)(( MB / fileSizeMB) * 100);
-  
-        if(percent % 2 == 0){
-          progressBar[percent / 2] = '=';
-        }
-  
-
-        std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
-  
-        std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
-      }
+      sleepDuration = calculateSpeed(speed);
     }
-    else {
-      while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-        file.write(buffer, bytes_recv);
-        MB += (double)bytes_recv / 1000000;
 
-        int percent = (int)(( MB / fileSizeMB) * 100);
-  
-        if(percent % 2 == 0){
-          progressBar[percent / 2] = '=';
-        }
-  
+    while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+      updateReceiveProgress(file, buffer, bytes_recv, MB, fileSizeMB);
 
-        std::cout << "\rProgress: " << percent << "%" << " [" << progressBar << "] " 
-        << std::fixed << std::setprecision(1) << MB << "/" << fileSizeMB << " MB " << std::flush;
-
+      if (speed > 0){
+        std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
       }
     }
     std::cout << std::endl;
     file.close();
   }
+
 
   close(clientSocket);
   return 0;

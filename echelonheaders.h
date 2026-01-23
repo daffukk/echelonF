@@ -1,12 +1,17 @@
 #pragma once
+#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 int clientSend(int argc, char* argv[], double speed=0, const char* passkey="");
 int clientRecv(int argc, char* argv[], bool continuous=false, double speed=0, const char* passkey="");
 int serverSend(int argc, char* argv[], double speed=0, const char* passkey="");
 int serverRecv(bool continuous=false, double speed=0, const char* passkey="");
+void updateReceiveProgress(std::ofstream& file, char* buffer, int bytes_recieved, double& MB, double fileSizeMB);
+void updateSendProgress(int clientSocket, char* buffer, int bytes_read, double& MB, double fileSizeMB);
 
 
 constexpr int PORT = 7777;
@@ -27,6 +32,16 @@ namespace color {
   constexpr const char* reset = "\033[0m";
 }
 
+
+inline int getTerminalWidth() {
+  struct winsize w;
+  if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) return w.ws_col;
+  return 80;
+}
+
+inline int getBarWidth() {
+  return std::clamp(getTerminalWidth() - 40, 10, 50);
+}
 
 inline bool flagFinder(int argc, char* argv[], const char* flag) {
   for (int i = 1; i < argc; i++) {
@@ -66,7 +81,7 @@ inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
 }
 
 inline int calculateSpeed(double speed) {
-  double oneMegabytePerSec = 1000 / (BUFFER_SIZE / 1024);
+  double oneMegabytePerSec = 1000 / ((double)BUFFER_SIZE / 1024);
   double sleepDuration = oneMegabytePerSec / speed; 
   return (int)sleepDuration;
 }

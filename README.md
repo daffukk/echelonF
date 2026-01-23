@@ -3,8 +3,8 @@
 EchelonF is a tool, that provides file transfering between Unix-based machines. Please report about all bugs in issues section.
 
 # TODO 
-- [ ] Fix line breaking in small windows by specifying line length
-- [ ] Add colors to progressbar
+- [X] Fix line breaking in small windows by specifying line length
+- [X] Add colors to progressbar
 
 # Compiling
 
