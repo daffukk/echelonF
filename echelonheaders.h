@@ -17,8 +17,8 @@ void updateSendProgress(int clientSocket, char* buffer, int bytes_read, double& 
 constexpr int PORT = 7777;
 constexpr int BUFFER_SIZE = 4096;
 
-
-namespace color {
+// Coloring text
+namespace color {  
   constexpr const char* red = "\033[31m";
   constexpr const char* green = "\033[32m";
   constexpr const char* yellow = "\033[33m";
@@ -39,10 +39,12 @@ inline int getTerminalWidth() {
   return 80;
 }
 
-inline int getBarWidth() {
+// Calculate progressbar length
+inline int getBarWidth() { 
   return std::clamp(getTerminalWidth() - 40, 10, 50);
 }
 
+// Find flags like --always
 inline bool flagFinder(int argc, char* argv[], const char* flag) {
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], flag) == 0) {
@@ -52,6 +54,7 @@ inline bool flagFinder(int argc, char* argv[], const char* flag) {
   return false;
 }
 
+// Find flags with double value like `--speed=0.1` <- this flag returns 0.1
 inline double findFlagValue(int argc, char* argv[], const char* flag) {
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
@@ -69,6 +72,7 @@ inline double findFlagValue(int argc, char* argv[], const char* flag) {
   return -1;
 }
 
+// Find flags with string value like `--passkey=qwerty123` <- this flag returns qwerty123
 inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
   for(int i=1; i < argc; i++) {
     std::string arg = argv[i];
@@ -80,6 +84,7 @@ inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
   return "";
 }
 
+// Actually calculates the sleep duration for a custom speed
 inline int calculateSpeed(double speed) {
   double oneMegabytePerSec = 1000 / ((double)BUFFER_SIZE / 1024);
   double sleepDuration = oneMegabytePerSec / speed; 

@@ -1,6 +1,4 @@
-#include <algorithm>
 #include <fstream>
-#include <iomanip>
 #include <ios>
 #include <iostream>
 #include <sys/socket.h>
@@ -20,9 +18,9 @@ int serverRecv(bool continuous, double speed, const char* passkey) {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
-  serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(PORT);
-  serverAddress.sin_addr.s_addr = INADDR_ANY;
+  serverAddress.sin_family = AF_INET; // IPV4
+  serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
+  serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
 
   bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
@@ -33,7 +31,6 @@ int serverRecv(bool continuous, double speed, const char* passkey) {
   if(passkey != nullptr && strlen(passkey) > 0) {
     bool logged = false;
     while(logged != true) {
-   
       int userPasskeyLenght;
       recv(clientSocket, &userPasskeyLenght, sizeof(int), 0);
   

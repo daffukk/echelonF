@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iomanip>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <iostream>
@@ -14,11 +13,11 @@ int clientRecv(int argc, char* argv[], bool continuous, double speed, const char
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
-  serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(PORT);
+  serverAddress.sin_family = AF_INET; //IPV4
+  serverAddress.sin_port = htons(PORT); // set in echelonheaders.h file
 
-  struct hostent* host = gethostbyname(argv[3]);
-  serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr);
+  struct hostent* host = gethostbyname(argv[3]); // argv[3] is ip or domain
+  serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts domain to ip
  
 
   while(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) >= 0) {
@@ -42,10 +41,10 @@ int clientRecv(int argc, char* argv[], bool continuous, double speed, const char
   
     std::ofstream file(filename, std::ios::binary);
     
-    char buffer[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE]; // set in echelonheaders.h file
     int bytes_recv;
     int sleepDuration;
-    double MB = 0;
+    double MB = 0; // counter
     double fileSizeMB = (double)fileSize / 1000000;
 
 

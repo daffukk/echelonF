@@ -1,7 +1,6 @@
 #include "echelonheaders.h"
 #include <cstring>
 #include <fstream>
-#include <iomanip>
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -17,9 +16,9 @@ int serverSend(int argc, char* argv[], double speed, const char* passkey) {
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
-  serverAddress.sin_family = AF_INET;
-  serverAddress.sin_port = htons(PORT);
-  serverAddress.sin_addr.s_addr = INADDR_ANY;
+  serverAddress.sin_family = AF_INET; // IPV4
+  serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
+  serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
 
   bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
@@ -27,7 +26,7 @@ int serverSend(int argc, char* argv[], double speed, const char* passkey) {
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
-  const char* filename = argv[3];
+  const char* filename = argv[3]; // argv[3] is a file //im tired to repeat this fucking comments
 
   std::ifstream file(filename, std::ios::binary);
 
