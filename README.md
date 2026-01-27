@@ -1,10 +1,13 @@
 # EchelonF
 
-EchelonF is a tool, that provides file transfering between Unix-based machines. Please report about all bugs in issues section.
+EchelonF is a tool, that provides file transfering between Unix-based machines through TCP sockets. Please report about all bugs in issues section.
 
 # TODO 
 - [X] Fix line breaking in small windows by specifying line length
 - [X] Add colors to progressbar
+- [ ] Remake flags pasring
+- [ ] Add --port and --buffer flags
+- [ ] Add custom filepath support
 - [ ] Add multi-sending one file from the server
 - [ ] Add secure transfer by encrypting file stream
 

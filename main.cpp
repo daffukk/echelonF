@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   }
 
   else if(strcmp(argv[1], "server") == 0 && 
-      (argc == 2 ||flagFinder(argc, argv, "--help") || flagFinder(argc, argv, "-h"))) {
+      (argc == 2 || flagFinder(argc, argv, "--help") || flagFinder(argc, argv, "-h"))) {
     printServerHelp(argc, argv);
     return 0;
   }
