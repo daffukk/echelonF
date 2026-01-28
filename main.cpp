@@ -5,11 +5,54 @@
 #include <string>
 #include "echelonheaders.h"
 
+
+
+struct Config {
+  bool continuous = false;
+  double speed = 0.0;
+
+  std::string passkey;
+  std::string mode;
+  std::string action;
+};
+
+Config parseArgs(int argc, char** argv) {
+  Config cfg;
+
+  if(argc >= 2) {
+     cfg.mode = argv[1];
+  }
+
+  if(argc >= 3) {
+    cfg.action = argv[2];
+  }
+
+  for(int i = 3; i < argc; i++) {
+    std::string arg = argv[i];
+
+    if(arg == "--always" || arg == "-a") {
+      cfg.continuous = true;
+    }
+
+    else if (arg == "--passkey" && i+1 < argc) {
+      cfg.passkey = argv[++i];
+    }
+
+    else if (arg == "--speed" && i+1 < argc) {
+      cfg.speed = std::stod(argv[++i]);
+    }
+  }
+
+  return cfg;
+}
+
+
+
 int main(int argc, char* argv[]) {
 
   // --help
 
-  if(argc < 2) {
+  if(argc < 3) {
     std::cout << "\n----server----\n";
     printServerHelp(argc, argv);
     std::cout << "\n----client----\n";
@@ -17,84 +60,36 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  else if(strcmp(argv[1], "client") == 0 &&
-      (argc == 2 || flagFinder(argc, argv, "--help") || flagFinder(argc, argv, "-h"))) {
-    printClientHelp(argc, argv);
-    return 0;
+  Config cfg = parseArgs(argc, argv);
+
+  if(cfg.mode == "server") {
+    if(cfg.action == "recv") {
+      if(cfg.continuous) {
+        while(true) {
+          serverRecv(true, cfg.speed, cfg.passkey.c_str());
+        }
+      }
+
+      return serverRecv(cfg.continuous, cfg.speed, cfg.passkey.c_str());
+    }
+
+    else if(cfg.action == "send") {
+      return serverSend(argc, argv, cfg.speed, cfg.passkey.c_str());
+    }
   }
 
-  else if(strcmp(argv[1], "server") == 0 && 
-      (argc == 2 || flagFinder(argc, argv, "--help") || flagFinder(argc, argv, "-h"))) {
-    printServerHelp(argc, argv);
-    return 0;
-  }
-
-
-
-  // server
-
-  if(argc >= 3 && strcmp(argv[1], "server") == 0){
-    bool continuous = false;
-    double speed = 0;
-    std::string passkey = "";
-
-    if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
-      continuous = true;
+  else if(cfg.mode == "client") {
+    if(cfg.action == "send") {
+      return clientSend(argc, argv, cfg.speed, cfg.passkey.c_str());
     }
     
-    double tempSpeed = findFlagValue(argc, argv, "--speed=");
-    if(tempSpeed > 0) {
-      speed = tempSpeed; 
-    }
-
-    std::string tempPasskey = findFlagValueStr(argc, argv, "--passkey=");
-    if(tempPasskey != "" && strlen(tempPasskey.c_str()) > 0) {
-      passkey = tempPasskey;
-    }
-
-    if(strcmp(argv[2], "recv") == 0) {
-      while(continuous){
-        serverRecv(continuous, speed, passkey.c_str());
+    else if(cfg.action == "recv") {
+      if(cfg.continuous) {
+        while(true) {
+          clientRecv(argc, argv, cfg.continuous, cfg.speed, cfg.passkey.c_str());
+        }
       }
-      return serverRecv(continuous, speed, passkey.c_str());
-    }
-
-    else if(strcmp(argv[2], "send") == 0 && argc >= 4) {
-      return serverSend(argc, argv, speed, passkey.c_str());
-    }
-  }
-
-
-
-  //client
-
-  else if(argc >= 4 && strcmp(argv[1], "client") == 0) {
-    bool continuous = false;
-    double speed = 0;
-    std::string passkey = "";
-
-    if(flagFinder(argc, argv, "--always") || flagFinder(argc, argv, "-a")) {
-      continuous = true;
-    }
-    
-    double tempSpeed = findFlagValue(argc, argv, "--speed=");
-    if(tempSpeed > 0) {
-      speed = tempSpeed; 
-    }
-
-    std::string tempPasskey = findFlagValueStr(argc, argv, "--passkey=");
-    if(tempPasskey != "" && strlen(tempPasskey.c_str()) > 0) {
-      passkey = tempPasskey;
-    }
-
-    if(strcmp(argv[2], "send") == 0 && argc >= 5) {
-      return clientSend(argc, argv, speed, passkey.c_str());
-    }
-    else if(strcmp(argv[2], "recv") == 0) {
-      while(continuous){
-        clientRecv(argc, argv, continuous, speed, passkey.c_str());
-      }
-      return clientRecv(argc, argv, continuous, speed, passkey.c_str());
+      return clientRecv(argc, argv, cfg.continuous, cfg.speed, cfg.passkey.c_str());
     }
   }
 

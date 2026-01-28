@@ -96,8 +96,8 @@ inline void printClientHelp(int argc, char* argv[]) {
     << "Usage: " << argv[0] << " client <MODE> <OPTIONS>\n"
     << "\n"
     << "Examples:\n"
-    << "\t" << argv[0] << " client send video.mp4 dwpo.xyz --passkey=abc12345\n"
-    << "\t" << argv[0] << " client recv dwpo.xyz --passkey=abc12345\n"
+    << "\t" << argv[0] << " client send video.mp4 dwpo.xyz --passkey abc12345\n"
+    << "\t" << argv[0] << " client recv dwpo.xyz --passkey abc12345\n"
     << "\n"
     << "Modes:\n"
     << "\tsend <FILE> <IP/DOMAIN> \t Send files\n"
@@ -106,8 +106,8 @@ inline void printClientHelp(int argc, char* argv[]) {
     << "Options:\n"
     << "\t-h, --help \t Show this text\n"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
-    << "\t--speed= \t Specify sending/receiving speed. Accept only int numbers.\n"
-    << "\t--passkey= \t Set passkey to an application, very useful flag if you are not in local network.\n";
+    << "\t--speed \t Specify sending/receiving speed. Accept only int numbers.\n"
+    << "\t--passkey \t Set passkey to an application, very useful flag if you are not in local network.\n";
     
 }
 
@@ -116,8 +116,8 @@ inline void printServerHelp(int argc, char* argv[]) {
     << "Usage: " << argv[0] << "server <MODE> <OPTIONS>\n"
     << "\n"
     << "Examples:\n"
-    << "\t" << argv[0] << " server recv --passkey=abc12345\n"
-    << "\t" << argv[0] << " server send video.mp4 --passkey=abc12345\n"
+    << "\t" << argv[0] << " server recv --passkey abc12345\n"
+    << "\t" << argv[0] << " server send video.mp4 --passkey abc12345\n"
     << "\n"
     << "Modes:\n"
     << "\trecv \t Receive files\n"
@@ -126,8 +126,8 @@ inline void printServerHelp(int argc, char* argv[]) {
     << "Options:\n"
     << "\t-h, --help \t Show this text\n"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
-    << "\t--speed= \t Specify sending/receiving speed. Accept only int numbers.\n"
-    << "\t--passkey= \t Set passkey to an application, very useful flag if you are not in local network.\n";
+    << "\t--speed \t Specify sending/receiving speed. Accept only int numbers.\n"
+    << "\t--passkey \t Set passkey to an application, very useful flag if you are not in local network.\n";
     
 }
 
