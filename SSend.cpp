@@ -11,7 +11,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-int serverSend(int argc, char* argv[], double speed, const char* passkey) {
+int serverSend(Config cfg) {
+  int speed = cfg.speed;
+  const char* passkey = cfg.passkey.c_str();
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -26,7 +28,7 @@ int serverSend(int argc, char* argv[], double speed, const char* passkey) {
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
-  const char* filename = argv[3]; // argv[3] is a file //im tired to repeat this fucking comments
+  const char* filename = cfg.file.c_str(); // argv[3] is a file //im tired to repeat this fucking comments
 
   std::ifstream file(filename, std::ios::binary);
 

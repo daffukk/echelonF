@@ -5,7 +5,7 @@ EchelonF is a tool, that provides file transfering between Unix-based machines t
 # TODO 
 - [X] Fix line breaking in small windows by specifying line length
 - [X] Add colors to progressbar
-- [ ] Remake flags pasring
+- [X] Remake flags pasring
 - [ ] Add --port and --buffer flags
 - [ ] Add custom filepath support
 - [ ] Add multi-sending one file from the server

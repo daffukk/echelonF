@@ -14,7 +14,11 @@
 
 
 
-int serverRecv(bool continuous, double speed, const char* passkey) {
+int serverRecv(Config cfg) {
+  bool continuous = cfg.continuous;
+  int speed = cfg.speed;
+  const char* passkey = cfg.passkey.c_str();
+
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;

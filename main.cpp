@@ -7,27 +7,58 @@
 
 
 
-struct Config {
-  bool continuous = false;
-  double speed = 0.0;
-
-  std::string passkey;
-  std::string mode;
-  std::string action;
-};
 
 Config parseArgs(int argc, char** argv) {
   Config cfg;
 
-  if(argc >= 2) {
-     cfg.mode = argv[1];
+  if (argc < 3) exit(1);
+
+  cfg.mode = argv[1];
+  cfg.action = argv[2];
+
+  int i=3; // initial argc argument 
+
+  if(cfg.mode == "server" && cfg.action == "recv"){}
+
+  else if(cfg.mode == "server" && cfg.action == "send") {
+
+    if(i >= argc) {
+      std::cerr << "Check the usage\n";
+      exit(1);
+    }
+
+    cfg.file = argv[i++];
   }
 
-  if(argc >= 3) {
-    cfg.action = argv[2];
+  else if(cfg.mode == "client" && cfg.action == "send") {
+
+    if(i + 1 >= argc) {
+      std::cerr << "Check the usage\n";
+      exit(1);
+    }
+
+    cfg.file = argv[i++];
+    cfg.ip = argv[i++];
   }
 
-  for(int i = 3; i < argc; i++) {
+  else if(cfg.mode == "client" && cfg.action == "recv") {
+
+    if(i >= argc) {
+      std::cerr << "Check the usage\n";
+      exit(1);
+    }
+
+    cfg.ip = argv[i++];
+  }
+
+  else {
+    std::cerr << "Unknown mode/action\n";
+    exit(1);
+  }
+
+
+
+  for(; i < argc; i++) {
     std::string arg = argv[i];
 
     if(arg == "--always" || arg == "-a") {
@@ -66,30 +97,30 @@ int main(int argc, char* argv[]) {
     if(cfg.action == "recv") {
       if(cfg.continuous) {
         while(true) {
-          serverRecv(true, cfg.speed, cfg.passkey.c_str());
+          serverRecv(cfg);
         }
       }
 
-      return serverRecv(cfg.continuous, cfg.speed, cfg.passkey.c_str());
+      return serverRecv(cfg);
     }
 
     else if(cfg.action == "send") {
-      return serverSend(argc, argv, cfg.speed, cfg.passkey.c_str());
+      return serverSend(cfg);
     }
   }
 
   else if(cfg.mode == "client") {
     if(cfg.action == "send") {
-      return clientSend(argc, argv, cfg.speed, cfg.passkey.c_str());
+      return clientSend(cfg);
     }
     
     else if(cfg.action == "recv") {
       if(cfg.continuous) {
         while(true) {
-          clientRecv(argc, argv, cfg.continuous, cfg.speed, cfg.passkey.c_str());
+          clientRecv(cfg);
         }
       }
-      return clientRecv(argc, argv, cfg.continuous, cfg.speed, cfg.passkey.c_str());
+      return clientRecv(cfg);
     }
   }
 

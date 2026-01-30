@@ -6,10 +6,25 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-int clientSend(int argc, char* argv[], double speed=0, const char* passkey="");
-int clientRecv(int argc, char* argv[], bool continuous=false, double speed=0, const char* passkey="");
-int serverSend(int argc, char* argv[], double speed=0, const char* passkey="");
-int serverRecv(bool continuous=false, double speed=0, const char* passkey="");
+
+struct Config {
+  std::string ip;
+  std::string file;
+
+  bool continuous = false;
+  double speed = 0.0;
+
+  std::string passkey = "";
+  std::string mode;
+  std::string action;
+};
+
+
+
+int clientSend(Config cfg);
+int clientRecv(Config cfg);
+int serverSend(Config cfg);
+int serverRecv(Config cfg);
 void updateReceiveProgress(std::ofstream& file, char* buffer, int bytes_recieved, double& MB, double fileSizeMB);
 void updateSendProgress(int clientSocket, char* buffer, int bytes_read, double& MB, double fileSizeMB);
 

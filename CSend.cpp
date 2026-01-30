@@ -12,7 +12,9 @@
 #include <netinet/in.h>
 #include "echelonheaders.h"
 
-int clientSend(int argc, char* argv[], double speed, const char* passkey) {
+int clientSend(Config cfg) {
+  int speed = cfg.speed;
+  const char* passkey = cfg.passkey.c_str();
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -20,13 +22,13 @@ int clientSend(int argc, char* argv[], double speed, const char* passkey) {
   serverAddress.sin_family = AF_INET; //IPV4
   serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
   
-  struct hostent* host = gethostbyname(argv[4]); // argv[4] is an ip or a domain
+  struct hostent* host = gethostbyname(cfg.ip.c_str()); // argv[4] is an ip or a domain
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts a domain to ip
 
 
   connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-  const char* filename = argv[3]; // argv[3] is a file
+  const char* filename = cfg.file.c_str(); // argv[3] is a file
 
   std::ifstream file(filename, std::ios::binary);
 

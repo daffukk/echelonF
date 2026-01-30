@@ -8,7 +8,10 @@
 #include <unistd.h>
 #include "echelonheaders.h"
 
-int clientRecv(int argc, char* argv[], bool continuous, double speed, const char* passkey) {
+int clientRecv(Config cfg) {
+  int speed = cfg.speed;
+  const char* passkey = cfg.passkey.c_str();
+
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -16,7 +19,7 @@ int clientRecv(int argc, char* argv[], bool continuous, double speed, const char
   serverAddress.sin_family = AF_INET; //IPV4
   serverAddress.sin_port = htons(PORT); // set in echelonheaders.h file
 
-  struct hostent* host = gethostbyname(argv[3]); // argv[3] is ip or domain
+  struct hostent* host = gethostbyname(cfg.ip.c_str()); // argv[3] is ip or domain
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts domain to ip
  
 
