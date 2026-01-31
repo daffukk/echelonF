@@ -8,6 +8,9 @@
 
 
 struct Config {
+  int port = 7777;
+  int bufSize = 4096;
+
   std::string ip;
   std::string file;
 
@@ -29,10 +32,10 @@ void updateReceiveProgress(std::ofstream& file, char* buffer, int bytes_recieved
 void updateSendProgress(int clientSocket, char* buffer, int bytes_read, double& MB, double fileSizeMB);
 
 
-constexpr int PORT = 7777;
-constexpr int BUFFER_SIZE = 4096;
+extern int PORT;
+extern int BUFFER_SIZE;
 
-// Coloring text
+// Text coloring
 namespace color {  
   constexpr const char* red = "\033[31m";
   constexpr const char* green = "\033[32m";

@@ -5,7 +5,9 @@
 #include <string>
 #include "echelonheaders.h"
 
-
+// Port and bufSize declaration
+int PORT = 7777;
+int BUFFER_SIZE = 4096;
 
 
 Config parseArgs(int argc, char** argv) {
@@ -72,21 +74,34 @@ Config parseArgs(int argc, char** argv) {
       cfg.passkey = argv[++i];
     }
 
-    else if (arg.find("--passkey=") == 0) {
-      cfg.passkey = arg.substr(10);
-    }
-
     else if (arg == "--speed" && i+1 < argc) {
       cfg.speed = std::stod(argv[++i]);
     }
 
+    else if (arg == "--port" && i+1 < argc) {
+      cfg.port = std::stoi(argv[++i]);
+    }
+
+    else if (arg == "--buffer" && i+1 < argc) {
+      cfg.bufSize = std::stoi(argv[++i]);
+    }
+
     else if (arg.find("--speed=") == 0) {
       cfg.speed = std::stod(arg.substr(8));
+    } 
+
+    else if (arg.find("--passkey=") == 0) {
+      cfg.passkey = arg.substr(10);
+    }
+
+    else if (arg.find("--port=") == 0) {
+      cfg.port = std::stoi(arg.substr(7));
+    }
+
+    else if (arg.find("--buffer=") == 0) {
+      cfg.bufSize = std::stoi(arg.substr(9));
     }
   }
-
-  std::cout << "Speed: " << cfg.speed << std::endl;
-  std::cout << "Passkey: " << cfg.passkey << std::endl;
 
   return cfg;
 }
@@ -106,6 +121,9 @@ int main(int argc, char* argv[]) {
   }
 
   Config cfg = parseArgs(argc, argv);
+
+  PORT = cfg.port;
+  BUFFER_SIZE = cfg.bufSize;
 
   if(cfg.mode == "server") {
     if(cfg.action == "recv") {
