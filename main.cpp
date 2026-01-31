@@ -17,7 +17,9 @@ Config parseArgs(int argc, char** argv) {
   cfg.action = argv[2];
 
   int i=3; // initial argc argument 
+  
 
+  // Mode and action arguments parsing
   if(cfg.mode == "server" && cfg.action == "recv"){}
 
   else if(cfg.mode == "server" && cfg.action == "send") {
@@ -58,6 +60,7 @@ Config parseArgs(int argc, char** argv) {
 
 
 
+  // Additional flags parsing
   for(; i < argc; i++) {
     std::string arg = argv[i];
 
@@ -69,10 +72,21 @@ Config parseArgs(int argc, char** argv) {
       cfg.passkey = argv[++i];
     }
 
+    else if (arg.find("--passkey=") == 0) {
+      cfg.passkey = arg.substr(10);
+    }
+
     else if (arg == "--speed" && i+1 < argc) {
       cfg.speed = std::stod(argv[++i]);
     }
+
+    else if (arg.find("--speed=") == 0) {
+      cfg.speed = std::stod(arg.substr(8));
+    }
   }
+
+  std::cout << "Speed: " << cfg.speed << std::endl;
+  std::cout << "Passkey: " << cfg.passkey << std::endl;
 
   return cfg;
 }
