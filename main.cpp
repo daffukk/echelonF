@@ -1,5 +1,6 @@
 //this code is piece of shit, I know.
 
+#include <cstdlib>
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -8,6 +9,30 @@
 // Port and bufSize declaration
 int PORT = 7777;
 int BUFFER_SIZE = 4096;
+
+
+
+int parseInt(const std::string& value, const std::string& flag) {
+  try {
+    return std::stoi(value);
+  }
+  catch (...) {
+    std::cerr << "Invalid value for " << flag << ": " << value << "\n";
+    exit(1);
+  }
+}
+
+
+int parseDouble(const std::string& value, const std::string& flag) {
+  try {
+    return std::stod(value);
+  }
+  catch (...) {
+    std::cerr << "Invalid value for " << flag << ": " << value << "\n";
+    exit(1);
+  }
+}
+
 
 
 Config parseArgs(int argc, char** argv) {
@@ -27,7 +52,7 @@ Config parseArgs(int argc, char** argv) {
   else if(cfg.mode == "server" && cfg.action == "send") {
 
     if(i >= argc) {
-      std::cerr << "Check the usage\n";
+      std::cerr << "Usage: \necf server send <file>\n";
       exit(1);
     }
 
@@ -37,7 +62,7 @@ Config parseArgs(int argc, char** argv) {
   else if(cfg.mode == "client" && cfg.action == "send") {
 
     if(i + 1 >= argc) {
-      std::cerr << "Check the usage\n";
+      std::cerr << "Usage: \necf client send <file> <ip>\n";
       exit(1);
     }
 
@@ -48,7 +73,7 @@ Config parseArgs(int argc, char** argv) {
   else if(cfg.mode == "client" && cfg.action == "recv") {
 
     if(i >= argc) {
-      std::cerr << "Check the usage\n";
+      std::cerr << "Usage: \necf client recv <ip>\n";
       exit(1);
     }
 
@@ -75,31 +100,42 @@ Config parseArgs(int argc, char** argv) {
     }
 
     else if (arg == "--speed" && i+1 < argc) {
-      cfg.speed = std::stod(argv[++i]);
+      cfg.speed = parseDouble(argv[++i], arg);
     }
 
     else if (arg == "--port" && i+1 < argc) {
-      cfg.port = std::stoi(argv[++i]);
+      cfg.port = parseInt(argv[++i], arg);
     }
 
     else if (arg == "--buffer" && i+1 < argc) {
-      cfg.bufSize = std::stoi(argv[++i]);
+      cfg.bufSize = parseInt(argv[++i], arg);
+    }
+
+    else if (arg.find("--passkey=") == 0) {
+      if(arg.substr(10).length() < 1) {
+        std::cerr << "Invalid passkey.\n";
+        exit(1);
+      }
+      else {
+        cfg.passkey = arg.substr(10);
+      }
     }
 
     else if (arg.find("--speed=") == 0) {
-      cfg.speed = std::stod(arg.substr(8));
+      cfg.speed = parseDouble(arg.substr(8), arg);
     } 
 
-    else if (arg.find("--passkey=") == 0) {
-      cfg.passkey = arg.substr(10);
-    }
-
     else if (arg.find("--port=") == 0) {
-      cfg.port = std::stoi(arg.substr(7));
+      cfg.port = parseInt(arg.substr(7), arg);
     }
 
     else if (arg.find("--buffer=") == 0) {
-      cfg.bufSize = std::stoi(arg.substr(9));
+      cfg.bufSize = parseInt(arg.substr(9), arg);
+    }
+
+    else {
+      std::cout << "Unknown argument: " << arg << "\n";
+      exit(1);
     }
   }
 
@@ -124,6 +160,18 @@ int main(int argc, char* argv[]) {
 
   PORT = cfg.port;
   BUFFER_SIZE = cfg.bufSize;
+  
+
+  if(cfg.port < 1 || cfg.port > 65535) {
+    std::cerr << "Port must be between 1 and 65535\n";
+    return 1;
+  }
+
+  if (cfg.bufSize < 256) {
+    std::cerr << "Buffer too small\n";
+    return 1;
+  }
+
 
   if(cfg.mode == "server") {
     if(cfg.action == "recv") {

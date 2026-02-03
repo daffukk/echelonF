@@ -4,7 +4,7 @@ EchelonF is a tool, that provides file transfering between Unix-based machines t
 
 # TODO 
 - [ ] Fix --speed
-- [ ] Add error handling
+- [ ] Add a transfer speed meter to progressbar
 - [ ] Add custom filepath support
 - [ ] Add multi-sending one file from the server
 - [ ] Add secure transfer by encrypting file stream
