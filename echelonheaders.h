@@ -125,11 +125,13 @@ inline void printClientHelp(int argc, char* argv[]) {
     << "\trecv <IP/DOMAIN> \t Receive files\n"
     << "\n"
     << "Options:\n"
+    << "Flags can be used in --port 1234 or --port=1234 format\n"
     << "\t-h, --help \t Show this text\n"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
-    << "\t--speed \t Specify sending/receiving speed. Accept only int numbers.\n"
-    << "\t--passkey \t Set passkey to an application, very useful flag if you are not in local network.\n";
-    
+    << "\t--speed \t Specify transfer speed. MB/S\n"
+    << "\t--passkey \t Set a passkey to an application, very useful flag if you are not in local network.\n"
+    << "\t--port \t Set a custom port, port must be between 1 and 65535.\n"
+    << "\t--buffer \t Set a custom buffer size, must be atleast 250 bytes.\n";
 }
 
 inline void printServerHelp(int argc, char* argv[]) {
@@ -145,10 +147,13 @@ inline void printServerHelp(int argc, char* argv[]) {
     << "\tsend <FILE> \t Send files\n"
     << "\n"
     << "Options:\n"
+    << "Flags can be used in --port 1234 or --port=1234 format\n"
     << "\t-h, --help \t Show this text\n"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
-    << "\t--speed \t Specify sending/receiving speed. Accept only int numbers.\n"
-    << "\t--passkey \t Set passkey to an application, very useful flag if you are not in local network.\n";
+    << "\t--speed \t Specify transfer speed. MB/S\n"
+    << "\t--passkey \t Set a passkey to an application, very useful flag if you are not in local network.\n"
+    << "\t--port \t Set a custom port, port must be between 1 and 65535.\n"
+    << "\t--buffer \t Set a custom buffer size, must be atleast 250 bytes.\n";
     
 }
 
