@@ -23,7 +23,7 @@ int parseInt(const std::string& value, const std::string& flag) {
 }
 
 
-int parseDouble(const std::string& value, const std::string& flag) {
+double parseDouble(const std::string& value, const std::string& flag) {
   try {
     return std::stod(value);
   }

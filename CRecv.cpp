@@ -9,7 +9,7 @@
 #include "echelonheaders.h"
 
 int clientRecv(Config cfg) {
-  int speed = cfg.speed;
+  double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
 
 

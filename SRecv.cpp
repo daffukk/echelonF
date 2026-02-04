@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <vector>
 #include "echelonheaders.h"
 
 
@@ -16,7 +17,7 @@
 
 int serverRecv(Config cfg) {
   bool continuous = cfg.continuous;
-  int speed = cfg.speed;
+  double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -68,7 +69,7 @@ int serverRecv(Config cfg) {
   
   std::ofstream file(filename, std::ios::binary);
 
-  char buffer[BUFFER_SIZE] = {0};
+  char buffer[BUFFER_SIZE];
   int bytes_recieved;
   int sleepDuration;
   double MB = 0;

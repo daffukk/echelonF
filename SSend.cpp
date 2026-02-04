@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 
 int serverSend(Config cfg) {
-  int speed = cfg.speed;
+  double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);

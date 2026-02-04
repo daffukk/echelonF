@@ -104,8 +104,11 @@ inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
 
 // Actually calculates the sleep duration for a custom speed
 inline int calculateSpeed(double speed) {
-  double oneMegabytePerSec = 1000 / ((double)BUFFER_SIZE / 1024);
-  double sleepDuration = oneMegabytePerSec / speed; 
+  double bytesPerSecond = speed * 1024 * 1024;
+  
+  double chunksPerSecond = bytesPerSecond / BUFFER_SIZE;
+  double secondsPerChunk = 1 / chunksPerSecond;
+  double sleepDuration = secondsPerChunk * 1000000;
   return (int)sleepDuration;
 }
 

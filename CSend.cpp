@@ -13,7 +13,7 @@
 #include "echelonheaders.h"
 
 int clientSend(Config cfg) {
-  int speed = cfg.speed;
+  double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
