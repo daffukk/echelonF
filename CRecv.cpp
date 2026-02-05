@@ -56,13 +56,19 @@ int clientRecv(Config cfg) {
       sleepDuration = calculateSpeed(speed);
     }
 
+    std::thread speedometer(BytesPerSecond, std::ref(bytesCounter), std::ref(speedBps), std::ref(running));
+
     while((bytes_recv = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-      updateReceiveProgress(file, buffer, bytes_recv, MB, fileSizeMB);
+      updateReceiveProgress(file, buffer, bytes_recv, MB, fileSizeMB, bytesCounter, speedBps);
 
       if (speed > 0){
         std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
       }
     }
+
+    running = false;
+    speedometer.join();
+
     std::cout << std::endl;
     file.close();
   }

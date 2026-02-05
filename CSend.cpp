@@ -66,14 +66,19 @@ int clientSend(Config cfg) {
     sleepDuration = calculateSpeed(speed);
   }
 
+  std::thread speedometer(BytesPerSecond, std::ref(bytesCounter), std::ref(speedBps), std::ref(running));
+  
   while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-    updateSendProgress(clientSocket, buffer, bytes_read, MB, fileSizeMB);
+    updateSendProgress(clientSocket, buffer, bytes_read, MB, fileSizeMB, bytesCounter, speedBps);
 
     if(speed > 0) {
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
     }
 
   }
+
+  running = false;
+  speedometer.join();
 
   std::cout << std::endl;
   file.close();

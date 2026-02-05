@@ -3,8 +3,7 @@
 EchelonF is a tool, that provides file transfering between Unix-based machines through TCP sockets. Please report about all bugs in issues section.
 
 # TODO 
-- [ ] Replace 'readsome' to 'read'
-- [ ] Add a transfer speed meter to progressbar
+- [ ] Replace 'readsome' with 'read'
 - [ ] Add custom filepath support
 - [ ] Add multi-sending one file from the server
 - [ ] Add secure transfer by encrypting file stream

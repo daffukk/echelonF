@@ -9,7 +9,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
-#include <vector>
 #include "echelonheaders.h"
 
 
@@ -81,14 +80,19 @@ int serverRecv(Config cfg) {
     sleepDuration = calculateSpeed(speed);
   }
 
+  std::thread speedometer(BytesPerSecond, std::ref(bytesCounter), std::ref(speedBps), std::ref(running));
+
   while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-    updateReceiveProgress(file, buffer, bytes_recieved, MB, fileSizeMB);
+    updateReceiveProgress(file, buffer, bytes_recieved, MB, fileSizeMB, bytesCounter, speedBps);
+
 
     if(speed > 0) {
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
     }
   }
 
+  running = false;
+  speedometer.join();
   
   std::cout << std::endl;
   file.close();

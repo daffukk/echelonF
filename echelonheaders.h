@@ -1,5 +1,7 @@
 #pragma once
 #include <algorithm>
+#include <cstdint>
+#include <atomic>
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -28,10 +30,13 @@ int clientSend(Config cfg);
 int clientRecv(Config cfg);
 int serverSend(Config cfg);
 int serverRecv(Config cfg);
-void updateReceiveProgress(std::ofstream& file, char* buffer, int bytes_recieved, double& MB, double fileSizeMB);
-void updateSendProgress(int clientSocket, char* buffer, int bytes_read, double& MB, double fileSizeMB);
+void updateReceiveProgress(std::ofstream& file, char* buffer, int bytes_recieved, double& MB, double fileSizeMB, std::atomic<uint64_t>& bytesCounter, std::atomic<uint64_t>& speedBps);
+void updateSendProgress(int clientSocket, char* buffer, int bytes_read, double& MB, double fileSizeMB, std::atomic<uint64_t>& bytesCounter, std::atomic<uint64_t>& speedBps);
+void BytesPerSecond(std::atomic<uint64_t>& bytesCounter, std::atomic<uint64_t>& speedBps, std::atomic<bool>& running);
 
-
+extern std::atomic<uint64_t> bytesCounter;
+extern std::atomic<uint64_t> speedBps;
+extern std::atomic<bool> running;
 extern int PORT;
 extern int BUFFER_SIZE;
 
@@ -59,7 +64,7 @@ inline int getTerminalWidth() {
 
 // Calculate progressbar length
 inline int getBarWidth() { 
-  return std::clamp(getTerminalWidth() - 40, 10, 50);
+  return std::clamp(getTerminalWidth() - 50, 10, 50);
 }
 
 // Find flags like --always
