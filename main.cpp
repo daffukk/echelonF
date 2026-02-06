@@ -1,4 +1,9 @@
-//this code is piece of shit, I know.
+/*
+ * Most comments are located in main.cpp and SRecv.cpp files so I don't repeat myself in every file.
+*/
+
+
+
 
 #include <cstdlib>
 #include <iostream>
@@ -40,8 +45,8 @@ Config parseArgs(int argc, char** argv) {
 
   if (argc < 3) exit(1);
 
-  cfg.mode = argv[1];
-  cfg.action = argv[2];
+  cfg.mode = argv[1]; // ./ecf client <-
+  cfg.action = argv[2]; // ./ecf client send <-
 
   int i=3; // initial argc argument 
   
@@ -56,7 +61,7 @@ Config parseArgs(int argc, char** argv) {
       exit(1);
     }
 
-    cfg.file = argv[i++];
+    cfg.file = argv[i++]; // takes argv[3] as file: ./ecf client send video.mp4 <- , then increments I
   }
 
   else if(cfg.mode == "client" && cfg.action == "send") {
@@ -67,7 +72,7 @@ Config parseArgs(int argc, char** argv) {
     }
 
     cfg.file = argv[i++];
-    cfg.ip = argv[i++];
+    cfg.ip = argv[i++]; // argv[4] as ip: ./ecf client send video.mp4 dwpo.xyz <-
   }
 
   else if(cfg.mode == "client" && cfg.action == "recv") {

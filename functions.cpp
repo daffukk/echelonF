@@ -21,18 +21,18 @@ void BytesPerSecond(std::atomic<uint64_t>& bytesCounter, std::atomic<uint64_t>& 
     auto end = ch::steady_clock::now();
 
     double dt = ch::duration<double>(end - start).count();
-    speedBps = static_cast<uint64_t>(bytesCounter.exchange(0) / dt);
+    speedBps = static_cast<uint64_t>(bytesCounter.exchange(0) / dt); // changing global variable to display it in progressBar
   }
 }
 
 
 void updateReceiveProgress(std::ofstream& file, char* buffer, int bytes_recieved, double& MB, double fileSizeMB, std::atomic<uint64_t>& bytesCounter, std::atomic<uint64_t>& speedBps) {
   file.write(buffer, bytes_recieved);
-  MB += (double)bytes_recieved / 1000000; // progress counter
+  MB += (double)bytes_recieved / 1000000; // progress counter(MB)
   bytesCounter += bytes_recieved; // is used in BytesPerSecond function
   double MBps = static_cast<double>(speedBps / 1024.0 / 1024.0); 
 
-  int percent = (int)(( MB / fileSizeMB) * 100);
+  int percent = static_cast<int>(( MB / fileSizeMB) * 100);
   percent = std::min(percent, 100);
   int filled = percent * getBarWidth() / 100;
 

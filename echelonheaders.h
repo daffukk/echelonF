@@ -55,7 +55,7 @@ namespace color {
   constexpr const char* reset = "\033[0m";
 }
 
-
+// get terminal width in symbols using ioctl lib
 inline int getTerminalWidth() {
   struct winsize w;
   if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) return w.ws_col;
@@ -65,46 +65,6 @@ inline int getTerminalWidth() {
 // Calculate progressbar length
 inline int getBarWidth() { 
   return std::clamp(getTerminalWidth() - 50, 10, 50);
-}
-
-// Find flags like --always
-inline bool flagFinder(int argc, char* argv[], const char* flag) {
-  for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], flag) == 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Find flags with double value like `--speed=0.1` <- this flag returns 0.1
-inline double findFlagValue(int argc, char* argv[], const char* flag) {
-  for (int i = 1; i < argc; i++) {
-    std::string arg = argv[i];
-      if(arg.find(flag) == 0) {
-        double flagValue = std::stof(arg.substr(strlen(flag)));
-
-        if(flagValue < 0) {
-          std::cout << "Invalid argument value: " << arg << std::endl;
-          return -1;
-        }
-
-        return flagValue;
-      }
-  }
-  return -1;
-}
-
-// Find flags with string value like `--passkey=qwerty123` <- this flag returns qwerty123
-inline std::string findFlagValueStr(int argc, char* argv[], const char* flag) {
-  for(int i=1; i < argc; i++) {
-    std::string arg = argv[i];
-    if(arg.find(flag) == 0) {
-      std::string flagValue = arg.substr(strlen(flag));
-      return flagValue;
-    }
-  }
-  return "";
 }
 
 // Actually calculates the sleep duration for a custom speed

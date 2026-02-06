@@ -32,6 +32,7 @@ int serverRecv(Config cfg) {
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
+  // poorly written passkey system
   if(passkey != nullptr && strlen(passkey) > 0) {
     bool logged = false;
     while(logged != true) {
@@ -80,6 +81,7 @@ int serverRecv(Config cfg) {
     sleepDuration = calculateSpeed(speed);
   }
 
+  // For transfer speed meter in progressBar
   std::thread speedometer(BytesPerSecond, std::ref(bytesCounter), std::ref(speedBps), std::ref(running));
 
   while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
@@ -91,7 +93,7 @@ int serverRecv(Config cfg) {
     }
   }
 
-  running = false;
+  running = false; // is used in speedometer thread
   speedometer.join();
   
   std::cout << std::endl;
