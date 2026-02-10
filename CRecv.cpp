@@ -33,17 +33,22 @@ int clientRecv(Config cfg) {
     }
 
     int filenameSize;
+    if(filenameSize <= 0 || filenameSize > 512) {
+      std::cerr << "Invalid filename lenght\n";
+      close(clientSocket);
+      return 1;
+    }
+
     recv(clientSocket, &filenameSize, sizeof(int), 0);
 
-    char filename[256];
-    recv(clientSocket, filename, filenameSize, 0);
-    filename[filenameSize] = '\0';
-  
+    std::string filename(filenameSize, '\0');
+    recv(clientSocket, filename.data(), filenameSize, 0);
+
     std::streampos fileSize;
     recv(clientSocket, &fileSize, sizeof(int), 0);
-  
+
     std::ofstream file(filename, std::ios::binary);
-    
+
     char buffer[BUFFER_SIZE]; // set in echelonheaders.h file
     int bytes_recv;
     int sleepDuration;

@@ -18,6 +18,7 @@
 int serverSend(Config cfg) {
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
+  const char* filename = cfg.file.c_str(); // argv[3] is a file //im tired to repeat this fucking comments
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -26,13 +27,15 @@ int serverSend(Config cfg) {
   serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
   serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
 
-  bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+  if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0) {
+    std::cerr << "Failed binding.\n";
+    return 1;
+  }
 
   listen(serverSocket, 5);
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
-  const char* filename = cfg.file.c_str(); // argv[3] is a file //im tired to repeat this fucking comments
 
   std::ifstream file(filename, std::ios::binary);
 
@@ -46,17 +49,25 @@ int serverSend(Config cfg) {
     while(logged != true) {
       int userPasskeyLength;
       recv(clientSocket, &userPasskeyLength, sizeof(int), 0);
-  
-      char userPasskey[256];
-      recv(clientSocket, userPasskey, userPasskeyLength, 0);
-      userPasskey[userPasskeyLength] = '\0';
-  
-      if(strcmp(userPasskey, passkey) != 0) {
-        std::cout << "Wrong passkey." << std::endl;
-        
+
+      if(userPasskeyLength <= 0 || userPasskeyLength > 1024) {
+        std::cerr << "Invalid passkey lenght\n";
         close(clientSocket);
-        close(serverSocket);
-        return 1;
+
+        clientSocket = accept(serverSocket, nullptr, nullptr);
+        continue;
+      }
+
+
+      std::string userPasskey(userPasskeyLength, '\0');
+      recv(clientSocket, userPasskey.data(), userPasskeyLength, 0);
+  
+      if(strcmp(userPasskey.c_str(), passkey) != 0) {
+        std::cout << "Wrong passkey." << std::endl;
+        close(clientSocket);
+
+        clientSocket = accept(serverSocket, nullptr, nullptr);
+        continue;
       }
       else {
         std::cout << "Passkey accepted." << std::endl;

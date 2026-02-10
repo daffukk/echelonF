@@ -26,7 +26,10 @@ int serverRecv(Config cfg) {
   serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
   serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
 
-  bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+  if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0) {
+    std::cerr << "Failed binding.\n";
+    return 1;
+  }
 
   listen(serverSocket, 5);
   
@@ -36,14 +39,21 @@ int serverRecv(Config cfg) {
   if(passkey != nullptr && strlen(passkey) > 0) {
     bool logged = false;
     while(logged != true) {
-      int userPasskeyLenght;
-      recv(clientSocket, &userPasskeyLenght, sizeof(int), 0);
-  
-      char userPasskey[256];
-      recv(clientSocket, userPasskey, userPasskeyLenght, 0);
-      userPasskey[userPasskeyLenght] = '\0';
-  
-      if(strcmp(userPasskey, passkey) != 0) {
+      int userPasskeyLength;
+      recv(clientSocket, &userPasskeyLength, sizeof(int), 0);
+
+      if(userPasskeyLength <= 0 || userPasskeyLength > 1024) {
+        std::cerr << "Invalid passkey lenght\n";
+        close(clientSocket);
+
+        clientSocket = accept(serverSocket, nullptr, nullptr);
+        continue;
+      }
+
+      std::string userPasskey(userPasskeyLength, '\0');
+      recv(clientSocket, userPasskey.data(), userPasskeyLength, 0);
+
+      if(strcmp(userPasskey.c_str(), passkey) != 0) {
         std::cout << "Wrong passkey." << std::endl;
         close(clientSocket);
 
@@ -60,9 +70,13 @@ int serverRecv(Config cfg) {
   int filenameSize;
   recv(clientSocket, &filenameSize, sizeof(int), 0);
 
-  char filename[256];
-  recv(clientSocket, filename, filenameSize, 0);
-  filename[filenameSize] = '\0';
+  if(filenameSize <= 0 || filenameSize > 512) {
+    std::cerr << "Invalid filename lenght\n";
+    close(clientSocket);
+  }
+
+  std::string filename(filenameSize, '\0');
+  recv(clientSocket, filename.data(), filenameSize, 0);
 
   std::streampos fileSize;
   recv(clientSocket, &fileSize, sizeof(int), 0);

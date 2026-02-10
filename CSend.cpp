@@ -15,6 +15,7 @@
 int clientSend(Config cfg) {
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
+  const char* filename = cfg.file.c_str(); 
 
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -26,9 +27,11 @@ int clientSend(Config cfg) {
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts a domain to ip
 
 
-  connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+  if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0) {
+    std::cerr << "Failed to connect.\n";
+    return 1;
+  }
 
-  const char* filename = cfg.file.c_str(); 
 
   std::ifstream file(filename, std::ios::binary);
 
