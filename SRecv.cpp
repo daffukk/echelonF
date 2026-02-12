@@ -1,3 +1,6 @@
+#include <chrono>
+#include <cerrno>
+#include <cstring>
 #include <fstream>
 #include <ios>
 #include <iostream>
@@ -15,6 +18,8 @@
 
 
 int serverRecv(Config cfg) {
+  namespace ch = std::chrono;
+
   bool continuous = cfg.continuous;
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
@@ -25,11 +30,24 @@ int serverRecv(Config cfg) {
   serverAddress.sin_family = AF_INET; // IPV4
   serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
   serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
+  
+  int i;
+  for(i=0; i < 5; i++) {
+    if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == 0) {
+      break;
+    }
+    
+    std::cerr << "Failed binding (attempt " << (i+1) << "/5).\n";
+    if(i < 4) {
+      std::this_thread::sleep_for(ch::seconds(2));
+    }
+  }
 
-  if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0) {
-    std::cerr << "Failed binding.\n";
+  if(i == 5) {
+    std::cout << "Failed to bind.\n" << std::strerror(errno) << "\n";
     return 1;
   }
+
 
   listen(serverSocket, 5);
   
@@ -103,7 +121,7 @@ int serverRecv(Config cfg) {
 
 
     if(speed > 0) {
-      std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
+      std::this_thread::sleep_for(ch::microseconds(sleepDuration));
     }
   }
 

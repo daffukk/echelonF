@@ -16,6 +16,8 @@
 
 
 int serverSend(Config cfg) {
+  namespace ch = std::chrono;
+
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
   const char* filename = cfg.file.c_str(); // argv[3] is a file //im tired to repeat this fucking comments
@@ -27,10 +29,23 @@ int serverSend(Config cfg) {
   serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
   serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
 
-  if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0) {
-    std::cerr << "Failed binding.\n";
+  int i;
+  for(i=0; i < 5; i++) {
+    if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == 0) {
+      break;
+    }
+    
+    std::cerr << "Failed binding (attempt " << (i+1) << "/5).\n";
+    if(i < 4) {
+      std::this_thread::sleep_for(ch::seconds(2));
+    }
+  }
+
+  if(i == 5) {
+    std::cout << "Failed to bind.\n" << std::strerror(errno) << "\n";
     return 1;
   }
+ 
 
   listen(serverSocket, 5);
   
@@ -61,7 +76,7 @@ int serverSend(Config cfg) {
 
       std::string userPasskey(userPasskeyLength, '\0');
       recv(clientSocket, userPasskey.data(), userPasskeyLength, 0);
-  
+
       if(strcmp(userPasskey.c_str(), passkey) != 0) {
         std::cout << "Wrong passkey." << std::endl;
         close(clientSocket);

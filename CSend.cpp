@@ -13,6 +13,8 @@
 #include "echelonheaders.h"
 
 int clientSend(Config cfg) {
+  namespace ch = std::chrono;
+
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
   const char* filename = cfg.file.c_str(); 
@@ -27,8 +29,20 @@ int clientSend(Config cfg) {
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts a domain to ip
 
 
-  if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0) {
-    std::cerr << "Failed to connect.\n";
+  int i;
+  for(i=0; i<5; i++) {
+    if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == 0) {
+      break;
+    }
+
+    std::cerr << "Failed to connect (attempt " << (i+1) << "/5).\n";
+    if(i<4) {
+      std::this_thread::sleep_for(ch::seconds(2));
+    }
+  }
+
+  if(i == 5) {
+    std::cerr << "Failed to connect.\n" << std::strerror(errno) << "\n";
     return 1;
   }
 

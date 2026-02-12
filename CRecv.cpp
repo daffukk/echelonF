@@ -9,6 +9,9 @@
 #include "echelonheaders.h"
 
 int clientRecv(Config cfg) {
+  namespace ch = std::chrono;
+
+  bool continuous = cfg.continuous;
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
 
@@ -21,7 +24,7 @@ int clientRecv(Config cfg) {
 
   struct hostent* host = gethostbyname(cfg.ip.c_str()); // argv[3] is ip or domain
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts domain to ip
- 
+
 
   while(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) >= 0) {
     
@@ -33,13 +36,13 @@ int clientRecv(Config cfg) {
     }
 
     int filenameSize;
+    recv(clientSocket, &filenameSize, sizeof(int), 0);
+    
     if(filenameSize <= 0 || filenameSize > 512) {
       std::cerr << "Invalid filename lenght\n";
       close(clientSocket);
       return 1;
     }
-
-    recv(clientSocket, &filenameSize, sizeof(int), 0);
 
     std::string filename(filenameSize, '\0');
     recv(clientSocket, filename.data(), filenameSize, 0);
@@ -67,7 +70,7 @@ int clientRecv(Config cfg) {
       updateReceiveProgress(file, buffer, bytes_recv, MB, fileSizeMB, bytesCounter, speedBps);
 
       if (speed > 0){
-        std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
+        std::this_thread::sleep_for(ch::microseconds(sleepDuration));
       }
     }
 
