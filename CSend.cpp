@@ -43,6 +43,7 @@ int clientSend(Config cfg) {
 
   if(i == 5) {
     std::cerr << "Failed to connect.\n" << std::strerror(errno) << "\n";
+    close(clientSocket);
     return 1;
   }
 
@@ -56,12 +57,24 @@ int clientSend(Config cfg) {
 
   if(passkey != nullptr && strlen(passkey) > 0) {
     int passkeyLength = strlen(passkey);
+    if(passkeyLength <= 0 || passkeyLength > 1024) {
+      std::cerr << "Invalid passkey lenght\n";
+      close(clientSocket);
+      return 1;
+    }
+
     send(clientSocket, &passkeyLength, sizeof(int), 0);
 
     send(clientSocket, passkey, passkeyLength, 0);
   }
 
   int filenameSize = strlen(filename);
+  if(filenameSize <= 0 || filenameSize > 512) {
+    std::cerr << "Invalid filename lenght\n";
+    close(clientSocket);
+    return 1;
+  }
+
   send(clientSocket, &filenameSize, sizeof(int), 0);
   send(clientSocket, filename, filenameSize, 0);
 

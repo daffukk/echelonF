@@ -92,6 +92,12 @@ int serverSend(Config cfg) {
   }
   
   int filenameSize = strlen(filename);
+  if(filenameSize <= 0 || filenameSize > 512) {
+    std::cerr << "Invalid filename lenght\n";
+    close(clientSocket);
+    return 1;
+  }
+
   send(clientSocket, &filenameSize, sizeof(int), 0);
   send(clientSocket, filename, filenameSize, 0);
 
