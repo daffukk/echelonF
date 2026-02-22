@@ -19,6 +19,9 @@ struct Config {
   bool continuous = false;
   double speed = 0.0;
 
+  int attemptAmount = 5;
+  int attemptInterval = 2;
+
   std::string passkey = "";
   std::string mode;
   std::string action;
@@ -93,6 +96,7 @@ inline void printClientHelp(int argc, char* argv[]) {
     << "Flags can be used in --port 1234 or --port=1234 format\n"
     << "\t-h, --help \t Show this text\n"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
+    << "\t-n \t Custom amount of attempts(for binding or connecting).\n"
     << "\t--speed \t Specify transfer speed. MB/S\n"
     << "\t--passkey \t Set a passkey to an application, very useful flag if you are not in local network.\n"
     << "\t--port \t Set a custom port, port must be between 1 and 65535.\n"
@@ -115,11 +119,11 @@ inline void printServerHelp(int argc, char* argv[]) {
     << "Flags can be used in --port 1234 or --port=1234 format\n"
     << "\t-h, --help \t Show this text\n"
     << "\t-a, --always \t Receive files without stopping the application, application will not stop after receiving single file. Only avaible in receiving mode.\n"
+    << "\t-n \t Custom amount of attempts(for binding or connecting).\n"
     << "\t--speed \t Specify transfer speed. MB/S\n"
     << "\t--passkey \t Set a passkey to an application, very useful flag if you are not in local network.\n"
     << "\t--port \t Set a custom port, port must be between 1 and 65535.\n"
     << "\t--buffer \t Set a custom buffer size, must be atleast 250 bytes.\n";
-    
 }
 
 

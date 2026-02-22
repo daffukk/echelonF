@@ -30,18 +30,16 @@ int clientSend(Config cfg) {
 
 
   int i;
-  for(i=0; i<5; i++) {
+  for(i=0; i < cfg.attemptAmount; i++) {
     if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == 0) {
       break;
     }
 
-    std::cerr << "Failed to connect (attempt " << (i+1) << "/5).\n";
-    if(i<4) {
-      std::this_thread::sleep_for(ch::seconds(2));
-    }
+    std::cerr << "Failed to connect (attempt " << (i+1) << "/" << cfg.attemptAmount << ").\n";
+    std::this_thread::sleep_for(ch::seconds(2));
   }
 
-  if(i == 5) {
+  if(i == cfg.attemptAmount) {
     std::cerr << "Failed to connect.\n" << std::strerror(errno) << "\n";
     close(clientSocket);
     return 1;

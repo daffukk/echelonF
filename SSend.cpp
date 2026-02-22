@@ -30,18 +30,16 @@ int serverSend(Config cfg) {
   serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
 
   int i;
-  for(i=0; i < 5; i++) {
+  for(i=0; i < cfg.attemptAmount; i++) {
     if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == 0) {
       break;
     }
     
-    std::cerr << "Failed binding (attempt " << (i+1) << "/5).\n";
-    if(i < 4) {
-      std::this_thread::sleep_for(ch::seconds(2));
-    }
+    std::cerr << "Failed binding (attempt " << (i+1) << "/" << cfg.attemptAmount << ").\n";
+    std::this_thread::sleep_for(ch::seconds(2));
   }
 
-  if(i == 5) {
+  if(i == cfg.attemptAmount) {
     std::cout << "Failed to bind.\n" << std::strerror(errno) << "\n";
     return 1;
   }

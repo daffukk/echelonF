@@ -13,6 +13,7 @@ EchelonF is a tool, that provides file transfering between Unix-based machines t
 - [ ] Custom filepath support
 - [ ] Multi-sending one file from the server
 - [ ] Secure transfer by encrypting file stream
+- [ ] Bittorent support(very hard)
 
 # Compiling
 

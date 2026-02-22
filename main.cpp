@@ -1,13 +1,8 @@
 /*
  * Most comments are located in main.cpp and SRecv.cpp files so I don't repeat myself in every file.
 */
-
-
-
-
 #include <cstdlib>
 #include <iostream>
-#include <cstring>
 #include <string>
 #include "echelonheaders.h"
 
@@ -116,6 +111,10 @@ Config parseArgs(int argc, char** argv) {
       cfg.bufSize = parseInt(argv[++i], arg);
     }
 
+    else if (arg == "-n" && i+1 < argc) {
+      cfg.attemptAmount = parseInt(argv[++i], arg);
+    }
+
     else if (arg.find("--passkey=") == 0) {
       if(arg.substr(10).length() < 1) {
         std::cerr << "Invalid passkey.\n";
@@ -136,6 +135,10 @@ Config parseArgs(int argc, char** argv) {
 
     else if (arg.find("--buffer=") == 0) {
       cfg.bufSize = parseInt(arg.substr(9), arg);
+    }
+
+    else if (arg.find("-n=") == 0) {
+      cfg.attemptAmount = parseInt(arg.substr(3), arg);
     }
 
     else {
