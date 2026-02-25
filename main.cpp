@@ -115,6 +115,10 @@ Config parseArgs(int argc, char** argv) {
       cfg.attemptAmount = parseInt(argv[++i], arg);
     }
 
+    else if (arg == "-i" && i+1 < argc) {
+      cfg.attemptInterval = parseInt(argv[++i], arg);
+    }
+
     else if (arg.find("--passkey=") == 0) {
       if(arg.substr(10).length() < 1) {
         std::cerr << "Invalid passkey.\n";
@@ -139,6 +143,10 @@ Config parseArgs(int argc, char** argv) {
 
     else if (arg.find("-n=") == 0) {
       cfg.attemptAmount = parseInt(arg.substr(3), arg);
+    }
+
+    else if (arg.find("-i=") == 0) {
+      cfg.attemptInterval = parseInt(arg.substr(3), arg);
     }
 
     else {

@@ -36,7 +36,7 @@ int serverSend(Config cfg) {
     }
     
     std::cerr << "Failed binding (attempt " << (i+1) << "/" << cfg.attemptAmount << ").\n";
-    std::this_thread::sleep_for(ch::seconds(2));
+    std::this_thread::sleep_for(ch::seconds(cfg.attemptInterval));
   }
 
   if(i == cfg.attemptAmount) {
