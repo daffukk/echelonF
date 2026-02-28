@@ -20,7 +20,7 @@ struct Config {
   double speed = 0.0;
 
   int attemptAmount = 5;
-  int attemptInterval = 2;
+  int attemptInterval = 2000; // millisec
 
   std::string passkey = "";
   std::string mode;

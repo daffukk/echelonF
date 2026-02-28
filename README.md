@@ -3,8 +3,6 @@
 EchelonF is a tool, that provides file transfering between Unix-based machines through TCP sockets. Please report about all bugs in issues section.
 
 # TODO 
-- [ ] Connect attempts in CRecv
-- [ ] Attempts interval to double
 - [ ] Receive certain amount of files
 - [ ] Replace 'readsome' with 'read'
 - [ ] Pause and resume functions

@@ -22,9 +22,9 @@ int clientSend(Config cfg) {
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
-  serverAddress.sin_family = AF_INET; //IPV4
+  serverAddress.sin_family = AF_INET; // IPV4
   serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
-  
+
   struct hostent* host = gethostbyname(cfg.ip.c_str());  
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts a domain to ip
 
@@ -36,7 +36,7 @@ int clientSend(Config cfg) {
     }
 
     std::cerr << "Failed to connect (attempt " << (i+1) << "/" << cfg.attemptAmount << ").\n";
-    std::this_thread::sleep_for(ch::seconds(cfg.attemptInterval));
+    std::this_thread::sleep_for(ch::milliseconds(cfg.attemptInterval));
   }
 
   if(i == cfg.attemptAmount) {
