@@ -119,6 +119,10 @@ Config parseArgs(int argc, char** argv) {
       cfg.attemptInterval = parseInt(argv[++i], arg);
     }
 
+    else if (arg == "-f" && i+1 < argc) {
+      cfg.fileCounter = parseInt(argv[++i], arg);
+    }
+
     else if (arg.find("--passkey=") == 0) {
       if(arg.substr(10).length() < 1) {
         std::cerr << "Invalid passkey.\n";
@@ -147,6 +151,10 @@ Config parseArgs(int argc, char** argv) {
 
     else if (arg.find("-i=") == 0) {
       cfg.attemptInterval = parseInt(arg.substr(3), arg);
+    }
+
+    else if (arg.find("-f=") == 0) {
+      cfg.fileCounter = parseInt(arg.substr(3), arg);
     }
 
     else {
@@ -191,7 +199,14 @@ int main(int argc, char* argv[]) {
 
   if(cfg.mode == "server") {
     if(cfg.action == "recv") {
-      if(cfg.continuous) {
+      if(cfg.fileCounter > 1) {
+        for(int i=0; i<cfg.fileCounter; i++) {
+          serverRecv(cfg);
+        }
+        return 0;
+      }
+
+      else if(cfg.continuous) {
         while(true) {
           serverRecv(cfg);
         }
@@ -211,7 +226,14 @@ int main(int argc, char* argv[]) {
     }
     
     else if(cfg.action == "recv") {
-      if(cfg.continuous) {
+      if(cfg.fileCounter > 1) {
+        for(int i=0; i<cfg.fileCounter; i++) {
+          clientRecv(cfg);
+        }
+        return 0;
+      }
+
+      else if(cfg.continuous) {
         while(true) {
           clientRecv(cfg);
         }

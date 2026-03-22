@@ -129,13 +129,8 @@ int serverRecv(Config cfg) {
   std::cout << std::endl;
   file.close();
 
-  if(continuous) {
-    close(clientSocket);
-    close(serverSocket);
-  }
-  else{
-    close(serverSocket);
-  }
+  close(clientSocket);
+  close(serverSocket);
 
   return 0;
 }

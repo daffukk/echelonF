@@ -22,6 +22,8 @@ struct Config {
   int attemptAmount = 5;
   int attemptInterval = 2000; // millisec
 
+  int fileCounter = 1;
+
   std::string passkey = "";
   std::string mode;
   std::string action;
