@@ -1,3 +1,8 @@
+#include <ecf/commands.h>
+#include <ecf/network.h>
+#include <ecf/config.h>
+#include <ecf/utils.h>
+#include <functional>
 #include <netdb.h>
 #include <cstring>
 #include <fstream>
@@ -10,9 +15,9 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "echelonheaders.h"
 
 int clientSend(Config cfg) {
+  TransferStats tstats;
   namespace ch = std::chrono;
 
   double speed = cfg.speed;
@@ -23,7 +28,7 @@ int clientSend(Config cfg) {
 
   sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET; // IPV4
-  serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
+  serverAddress.sin_port = htons(cfg.port); // set in the echelonheaders.h file
 
   struct hostent* host = gethostbyname(cfg.ip.c_str());  
   serverAddress.sin_addr.s_addr = *((unsigned long*)host->h_addr); // converts a domain to ip
@@ -83,7 +88,7 @@ int clientSend(Config cfg) {
 
   send(clientSocket, &fileSize, sizeof(int), 0);
 
-  char buffer[BUFFER_SIZE];
+  char buffer[cfg.bufSize];
   int bytes_read;
   int sleepDuration;
   double MB = 0;
@@ -91,13 +96,20 @@ int clientSend(Config cfg) {
   double fileSizeMB = (double)fileSize / 1000000;
 
   if(speed > 0) {
-    sleepDuration = calculateSpeed(speed);
+    sleepDuration = calculateSpeed(speed, cfg);
   }
 
-  std::thread speedometer(BytesPerSecond, std::ref(bytesCounter), std::ref(speedBps), std::ref(running));
+  std::thread speedometer(BytesPerSecond, std::ref(tstats));
   
   while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-    updateSendProgress(clientSocket, buffer, bytes_read, MB, fileSizeMB, bytesCounter, speedBps);
+    updateSendProgress(
+        clientSocket, 
+        buffer, 
+        bytes_read, 
+        MB, 
+        fileSizeMB, 
+        tstats
+    );
 
     if(speed > 0) {
       std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
@@ -105,7 +117,7 @@ int clientSend(Config cfg) {
 
   }
 
-  running = false;
+  tstats.running = false;
   speedometer.join();
 
   std::cout << std::endl;

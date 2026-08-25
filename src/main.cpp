@@ -1,15 +1,9 @@
-/*
- * Most comments are located in main.cpp and SRecv.cpp files so I don't repeat myself in every file.
-*/
+#include <ecf/commands.h>
+#include <ecf/config.h>
+#include <ecf/utils.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include "echelonheaders.h"
-
-// Port and bufSize declaration
-int PORT = 7777;
-int BUFFER_SIZE = 4096;
-
 
 
 int parseInt(const std::string& value, const std::string& flag) {
@@ -182,8 +176,6 @@ int main(int argc, char* argv[]) {
 
   Config cfg = parseArgs(argc, argv);
 
-  PORT = cfg.port;
-  BUFFER_SIZE = cfg.bufSize;
   
 
   if(cfg.port < 1 || cfg.port > 65535) {

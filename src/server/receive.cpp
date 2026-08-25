@@ -1,34 +1,40 @@
-#include "echelonheaders.h"
-#include <atomic>
+#include <ecf/commands.h>
+#include <ecf/network.h>
+#include <ecf/config.h>
+#include <ecf/utils.h>
+#include <chrono>
+#include <cerrno>
 #include <cstring>
 #include <fstream>
-#include <thread>
-#include <chrono>
+#include <ios>
 #include <iostream>
 #include <sys/socket.h>
+#include <thread>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <string.h>
 
 
 
 
-int serverSend(Config cfg) {
+int serverRecv(Config cfg) {
+  TransferStats tstats;
   namespace ch = std::chrono;
 
+  bool continuous = cfg.continuous;
   double speed = cfg.speed;
   const char* passkey = cfg.passkey.c_str();
-  const char* filename = cfg.file.c_str(); // argv[3] is a file //im tired to repeat this fucking comments
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in serverAddress;
   serverAddress.sin_family = AF_INET; // IPV4
-  serverAddress.sin_port = htons(PORT); // set in the echelonheaders.h file
+  serverAddress.sin_port = htons(cfg.port); // set in the echelonheaders.h file
   serverAddress.sin_addr.s_addr = INADDR_ANY; // bind on 0.0.0.0
-
+  
   int i;
   for(i=0; i < cfg.attemptAmount; i++) {
     if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == 0) {
@@ -43,20 +49,13 @@ int serverSend(Config cfg) {
     std::cout << "Failed to bind.\n" << std::strerror(errno) << "\n";
     return 1;
   }
- 
+
 
   listen(serverSocket, 5);
   
   int clientSocket = accept(serverSocket, nullptr, nullptr);
 
-
-  std::ifstream file(filename, std::ios::binary);
-
-  if(!file.is_open()) {
-    std::cerr << "error: can't open file " << filename << std::endl;
-    return 1;
-  }
-
+  // poorly written passkey system
   if(passkey != nullptr && strlen(passkey) > 0) {
     bool logged = false;
     while(logged != true) {
@@ -70,7 +69,6 @@ int serverSend(Config cfg) {
         clientSocket = accept(serverSocket, nullptr, nullptr);
         continue;
       }
-
 
       std::string userPasskey(userPasskeyLength, '\0');
       recv(clientSocket, userPasskey.data(), userPasskeyLength, 0);
@@ -88,55 +86,62 @@ int serverSend(Config cfg) {
       }
     }
   }
-  
-  int filenameSize = strlen(filename);
+
+  int filenameSize;
+  recv(clientSocket, &filenameSize, sizeof(int), 0);
+
   if(filenameSize <= 0 || filenameSize > 512) {
     std::cerr << "Invalid filename lenght\n";
     close(clientSocket);
-    return 1;
   }
 
-  send(clientSocket, &filenameSize, sizeof(int), 0);
-  send(clientSocket, filename, filenameSize, 0);
+  std::string filename(filenameSize, '\0');
+  recv(clientSocket, filename.data(), filenameSize, 0);
 
-  std::streampos fileSize = file.tellg();
-  file.seekg(0, std::ios::end);
-  fileSize = file.tellg() - fileSize;
-  file.seekg(0, std::ios::beg);
+  std::streampos fileSize;
+  recv(clientSocket, &fileSize, sizeof(int), 0);
+  
+  std::ofstream file(filename, std::ios::binary);
 
-  send(clientSocket, &fileSize, sizeof(int), 0);
-
-  char buffer[BUFFER_SIZE];
-  int bytes_read;
+  char buffer[cfg.bufSize];
+  int bytes_recieved;
   int sleepDuration;
   double MB = 0;
-  std::string progressBar(50, ' ');
   double fileSizeMB = (double)fileSize / 1000000;
 
+
+  std::cout << "Recieving file: " << filename << std::endl;
   if(speed > 0) {
-    sleepDuration = calculateSpeed(speed);
+    sleepDuration = calculateSpeed(speed, cfg);
   }
 
-  std::thread speedometer(BytesPerSecond, std::ref(bytesCounter), std::ref(speedBps), std::ref(running));
+  // For transfer speed meter in progressBar
+  std::thread speedometer(BytesPerSecond, std::ref(tstats));
 
-  while((bytes_read = file.readsome(buffer, sizeof(buffer))) > 0) {
-    updateSendProgress(clientSocket, buffer, bytes_read, MB, fileSizeMB, bytesCounter, speedBps);
+  while((bytes_recieved = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+    updateReceiveProgress(
+        file, 
+        buffer, 
+        bytes_recieved, 
+        MB, 
+        fileSizeMB, 
+        tstats
+    );
+
 
     if(speed > 0) {
-      std::this_thread::sleep_for(std::chrono::microseconds(sleepDuration));
+      std::this_thread::sleep_for(ch::microseconds(sleepDuration));
     }
-
   }
 
-  running = false;
+  tstats.running = false; // is used in speedometer thread
   speedometer.join();
-
+  
   std::cout << std::endl;
   file.close();
-  
+
   close(clientSocket);
   close(serverSocket);
 
   return 0;
-
 }
